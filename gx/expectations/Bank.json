@@ -1,0 +1,22 @@
+{
+  "data_asset_type": null,
+  "expectation_suite_name": "Bank",
+  "expectations": [
+    {
+      "expectation_type": "expect_column_distinct_values_to_be_in_set",
+      "kwargs": {
+        "column": "marital",
+        "value_set": [
+          "married",
+          "single",
+          "divorced"
+        ]
+      },
+      "meta": {}
+    }
+  ],
+  "ge_cloud_id": null,
+  "meta": {
+    "great_expectations_version": "0.17.23"
+  }
+}
