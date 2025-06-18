@@ -9,8 +9,8 @@ from typing import Any, Dict, Tuple
 import numpy as np
 import pandas as pd
 
-from great_expectations.core import ExpectationSuite, ExpectationConfiguration
-import great_expectations as gx
+from great_expectations.core.expectation_suite import ExpectationSuite
+from great_expectations.expectations.expectation_configuration import ExpectationConfiguration
 
 from pathlib import Path
 

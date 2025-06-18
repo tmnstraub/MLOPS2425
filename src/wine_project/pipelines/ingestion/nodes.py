@@ -9,8 +9,8 @@ from typing import Any, Dict, Tuple
 import numpy as np
 import pandas as pd
 
-from great_expectations.core import ExpectationSuite, ExpectationConfiguration
-
+from great_expectations.core.expectation_suite import ExpectationSuite
+from great_expectations.expectations.expectation_configuration import ExpectationConfiguration
 
 from pathlib import Path
 
@@ -25,6 +25,10 @@ credentials = conf_loader["credentials"]
 logger = logging.getLogger(__name__)
 
 def build_expectation_suite(expectation_suite_name: str, feature_group: str) -> ExpectationSuite:
+    import great_expectations as ge
+    # Ensure Great Expectations Data Context is initialized
+    context = ge.get_context()
+    
     """
     Builder used to retrieve an instance of the validation expectation suite.
     
@@ -36,52 +40,34 @@ def build_expectation_suite(expectation_suite_name: str, feature_group: str) -> 
         ExpectationSuite: A dictionary containing all the expectations for this particular feature group.
     """
     
-    expectation_suite_bank = ExpectationSuite(
-        expectation_suite_name=expectation_suite_name
-    )
+    expectation_suite_bank = ExpectationSuite(expectation_suite_name)
     
-
     # numerical features
     if feature_group == 'numerical_features':
-
-        for i in ['age', 'duration','campaign', 'pdays', 'previous','balance']:
-            expectation_suite_bank.add_expectation(
-                ExpectationConfiguration(
-                    expectation_type="expect_column_values_to_be_of_type",
-                    kwargs={"column": i, "type_": "int64"},
-                )
-            )
-        # age
         expectation_suite_bank.add_expectation(
-                ExpectationConfiguration(
-                    expectation_type="expect_column_min_to_be_between",
-                    kwargs={
-                        "column": "age",
-                        "min_value": 18,
-                        "strict_min": False,
-                    },
-                )
+            ExpectationConfiguration(
+                "expect_column_values_to_be_in_type_list",
+                {"column": "points", "type_": ["int64"]}
             )
-
+        )
 
     if feature_group == 'categorical_features':
-
-        expectation_suite_bank.add_expectation(
-            ExpectationConfiguration(
-                expectation_type="expect_column_distinct_values_to_be_in_set",
-                kwargs={"column": "marital", "value_set": ['divorced', 'married','single']},
+        for i in ["country", "description", "designation", "points", "province", "region_1", "region_2", "taster_name"]:
+            expectation_suite_bank.add_expectation(
+                ExpectationConfiguration(
+                    "expect_column_values_to_be_of_type",
+                    {"column": i, "type_": "str"}
+                )
             )
-        ) 
 
     if feature_group == 'target':
-        
         expectation_suite_bank.add_expectation(
             ExpectationConfiguration(
-                expectation_type="expect_column_distinct_values_to_be_in_set",
-                kwargs={"column": "y", "value_set": ['yes', 'no']},
+                "expect_column_values_to_be_in_type_list",
+                {"column": "price", "type_": ["float64"]}
             )
-        ) 
-     
+        )
+    
     return expectation_suite_bank
 
 
@@ -161,7 +147,6 @@ def to_feature_store(
 
 def ingestion(
     df1: pd.DataFrame,
-    df2: pd.DataFrame,
     parameters: Dict[str, Any]):
 
     """
@@ -185,30 +170,21 @@ def ingestion(
     """
 
     common_columns= []
-    for i in df2.columns.tolist():
+    for i in df1.columns.tolist():
         if i in df1.columns.tolist():
             common_columns.append(i)
     
     assert len(common_columns)>0, "Wrong data collected"
 
-    df_full = pd.merge(df1,df2, how = 'left',  on = common_columns  )
-
-    df_full= df_full.drop_duplicates()
+    df_full = df1.drop_duplicates()
 
 
     logger.info(f"The dataset contains {len(df_full.columns)} columns.")
 
     numerical_features = df_full.select_dtypes(exclude=['object','string','category']).columns.tolist()
     categorical_features = df_full.select_dtypes(include=['object','string','category']).columns.tolist()
-    categorical_features.remove(parameters["target_column"])
-
-    months_int = {'jan':1, 'feb':2, 'mar':3, 'apr':4,'may':5,'jun':6, 'jul':7 , 'aug':8 , 'sep':9 , 'oct':10, 'nov': 11, 'dec':12 }
-    df_full = df_full.reset_index()
-    df_full["datetime"] = pd.to_datetime({
-    "year": 2024,
-    "month": df_full["month"].map(months_int),
-    "day": 1
-    })
+    if parameters["target_column"] in categorical_features:
+        categorical_features.remove(parameters["target_column"])
 
     validation_expectation_suite_numerical = build_expectation_suite("numerical_expectations","numerical_features")
     validation_expectation_suite_categorical = build_expectation_suite("categorical_expectations","categorical_features")
@@ -218,9 +194,9 @@ def ingestion(
     categorical_feature_descriptions =[]
     target_feature_descriptions =[]
     
-    df_full_numeric = df_full[["index","datetime"] + numerical_features]
-    df_full_categorical = df_full[["index","datetime"] + categorical_features]
-    df_full_target = df_full[["index","datetime"] + [parameters["target_column"]]]
+    df_full_numeric = df_full[["index"] + numerical_features]
+    df_full_categorical = df_full[["index"] + categorical_features]
+    df_full_target = df_full[["index"] + [parameters["target_column"]]]
 
     if parameters["to_feature_store"]:
 

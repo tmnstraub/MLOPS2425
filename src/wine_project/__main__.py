@@ -1,5 +1,5 @@
 """wine_project file for ensuring the package is executable
-as `bank-full-project` and `python -m wine_project`
+as `wine-full-project` and `python -m wine_project`
 """
 import importlib
 from pathlib import Path
