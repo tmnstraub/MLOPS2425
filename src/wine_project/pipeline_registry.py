@@ -32,7 +32,8 @@ from wine_project.pipelines import (
     feature_selection as feature_selection_pipeline,
     split_data,
     preprocessing_batch,
-    model_predict
+    model_predict,
+    feature_engineering as feature_engineering_pipeline
 
 )
 
@@ -43,6 +44,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
         A mapping from a pipeline name to a ``Pipeline`` object.
     """
     ingestion_pipeline = data_ingestion.create_pipeline()
+    feature_engineering = feature_engineering_pipeline.create_pipeline()
     data_unit_tests_pipeline = data_tests.create_pipeline()
     split_data_pipeline = split_data.create_pipeline()
     preprocess_train_pipeline = preprocess_train.create_pipeline()
@@ -55,6 +57,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
 
     return {
         "ingestion": ingestion_pipeline,
+        "feature_engineering": feature_engineering,
         "data_unit_tests": data_unit_tests_pipeline,
         "split_data": split_data_pipeline,
         "preprocess_train": preprocess_train_pipeline,
