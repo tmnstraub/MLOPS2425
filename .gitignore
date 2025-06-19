@@ -5,9 +5,13 @@ build/
 dist/
 wheels/
 *.egg-info
+.DS_Store
 
 # Virtual environments
 .venv
 pyproject.toml
 uv.lock
+
+# Folders
+Practical Classes-20250616/
 
