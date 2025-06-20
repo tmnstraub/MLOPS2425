@@ -1,0 +1,11 @@
+hyperparameters : 
+  RandomForestClassifier:
+    n_estimators: [100, 200, 300]
+    max_depth: [5, 10, 20]
+    max_features: [0.5, 0.7, 1]
+    random_state: [2021]
+  GradientBoostingClassifier:
+    n_estimators: [100, 200, 300]
+    max_depth: [5, 10, 20]
+    max_features: [0.5, 0.7, 1]
+    random_state: [2021]

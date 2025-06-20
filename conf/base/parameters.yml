@@ -1,0 +1,22 @@
+target_column: "y"
+to_feature_store: True
+test_fraction: 0.3
+random_state: 2021
+run_name: "full_project"
+use_feature_selection: False
+feature_selection: "rfe"
+model_name: "bank"
+baseline_model_params:
+  n_estimators: 100
+  max_depth: 6
+  max_features: 20
+  random_state: 2021
+drop_col_options:
+  - designation
+  - province
+  - region_1
+  - region_2
+  - taster_name
+  - taster_twitter_handle
+  - title
+  - winery
