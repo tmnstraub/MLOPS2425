@@ -1,1 +1,1 @@
-{"ref_data": {"rows": 36169, "columns": 19, "file_size": 3285732}, "ana_data": {"rows": 9042, "columns": 19, "file_size": 821737}, "drift_result": {"rows": 181, "columns": 11, "file_size": 12532}}
+{"wine_raw_data": {"rows": 129971, "columns": 14, "file_size": 52908707}, "wine_ingested_data": {"rows": 129971, "columns": 9, "file_size": 10201888}}
