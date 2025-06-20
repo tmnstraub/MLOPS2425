@@ -17,13 +17,29 @@ In order to get the best out of the template:
 
 ## How to install dependencies
 
-Declare any dependencies in `requirements.txt` for `pip` installation.
+This project requires Python 3.9.23 and a number of packages. You can set up the project environment as follows:
 
-To install them, run:
+```bash
+# Create a virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows use: venv\Scripts\activate
 
-```
+# Install dependencies
 pip install -r requirements.txt
 ```
+
+### Important notes
+
+- The project has been tested with Python 3.9.23
+- The `requirements.txt` file contains all necessary packages with compatible versions
+- For feature store functionality, specific package versions (hsfs, hopsworks, etc.) are required and included
+
+The feature store integration requires specific versions of these packages:
+- `hsfs==3.7.9`
+- `hopsworks==4.2.6`
+- `hopsworks-aiomysql==0.2.1`
+
+If you encounter issues with the feature store upload, ensure these versions are installed correctly.
 
 ## How to run your Kedro pipeline
 
