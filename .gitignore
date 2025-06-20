@@ -11,6 +11,7 @@ conf/**/*credentials*
 
 # ignore everything in the following folders
 data/**
+Practical Classes-20250616/
 
 # except their sub-folders
 !data/**/
