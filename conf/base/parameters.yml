@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 target_column: "price"
+=======
+# conf/base/parameters.yml
+target_column: "y"
+>>>>>>> 7be5257 (add correlation matrix)
 to_feature_store: True
 test_fraction: 0.3
 random_state: 2021
 run_name: "full_project"
 use_feature_selection: False
+<<<<<<< HEAD
 feature_selection: "rfe"
 model_name: "wine"
 baseline_model_params:
@@ -11,3 +17,16 @@ baseline_model_params:
   max_depth: 6
   max_features: 20
   random_state: 2021
+=======
+
+feature_selection_params:
+  # No 'method' needed here anymore as both will run
+  correlation_threshold: 0.9 # Used by correlation_feature_selection
+  baseline_model_params: # Used by feature_selection (RFE)
+    n_estimators: 100
+    max_depth: 6
+    max_features: 20
+    random_state: 2021
+
+model_name: "bank"
+>>>>>>> 7be5257 (add correlation matrix)
