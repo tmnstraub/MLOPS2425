@@ -77,7 +77,7 @@ def test_data(df):
         logger.info("Data Source already exists.")
         datasource = context.datasources[datasource_name]
 
-    suite_bank = context.add_or_update_expectation_suite(expectation_suite_name="Bank")
+    suite_bank = context.add_or_update_expectation_suite(expectation_suite_name="Wine")
     
     #add more expectations to your data
     expectation_marital = ExpectationConfiguration(
@@ -128,7 +128,7 @@ def test_data(df):
         validations=[
             {
                 "batch_request": batch_request,
-                "expectation_suite_name": "Bank",
+                "expectation_suite_name": "Wine",
             },
         ],
     )
