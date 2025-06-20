@@ -8,7 +8,7 @@ readme = "README.md"
 dynamic = ["dependencies", "version"]
 
 [project.scripts]
-bank-full-project = "wine_project.__main__:main"
+wine-full-project = "wine_project.__main__:main"
 
 [project.entry-points."kedro.hooks"]
 
@@ -67,3 +67,6 @@ select = [
     "T201", # Print Statement
 ]
 ignore = ["E501"]  # Ruff format takes care of line-too-long
+
+[tool.kedro_telemetry]
+project_id = "3936ad5d67454c708b9ce155511ae10f"
