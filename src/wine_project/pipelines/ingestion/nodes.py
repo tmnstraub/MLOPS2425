@@ -9,15 +9,29 @@ from typing import Any, Dict, Tuple
 import numpy as np
 import pandas as pd
 
-from great_expectations.core import ExpectationSuite, ExpectationConfiguration
 import great_expectations as ge
-import hsfs
+from great_expectations.core import ExpectationSuite, ExpectationConfiguration
+
 import re
 import logging
 from pathlib import Path
 
 from kedro.config import OmegaConfigLoader
 from kedro.framework.project import settings
+
+# Add this code block right before import hopsworks (around line 88)
+import hsfs
+import sys
+
+# Create mock module to handle missing hopsworks_udf
+class MockHopsworksUdf:
+    def __init__(self):
+        self.udf = None
+
+# Add the missing module to hsfs
+if not hasattr(hsfs, 'hopsworks_udf'):
+    hsfs.hopsworks_udf = MockHopsworksUdf()
+
 
 conf_path = str(Path('') / settings.CONF_SOURCE)
 conf_loader = OmegaConfigLoader(conf_source=conf_path)
@@ -84,7 +98,6 @@ def build_expectation_suite(expectation_suite_name: str, feature_group: str, col
             )
     
     return expectation_suite_bank
-
 
 import hopsworks
 
