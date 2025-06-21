@@ -9,8 +9,8 @@ from typing import Any, Dict, Tuple
 import numpy as np
 import pandas as pd
 
-from great_expectations.core import ExpectationSuite, ExpectationConfiguration
-import great_expectations as gx
+from great_expectations.core.expectation_suite import ExpectationSuite
+from great_expectations.core import ExpectationConfiguration
 
 from pathlib import Path
 
@@ -77,7 +77,7 @@ def test_data(df):
         logger.info("Data Source already exists.")
         datasource = context.datasources[datasource_name]
 
-    suite_bank = context.add_or_update_expectation_suite(expectation_suite_name="Bank")
+    suite_bank = context.add_or_update_expectation_suite(expectation_suite_name="Wine")
     
     #add more expectations to your data
     expectation_marital = ExpectationConfiguration(
@@ -128,7 +128,7 @@ def test_data(df):
         validations=[
             {
                 "batch_request": batch_request,
-                "expectation_suite_name": "Bank",
+                "expectation_suite_name": "Wine",
             },
         ],
     )

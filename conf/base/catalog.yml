@@ -16,6 +16,9 @@ ingested_data:
   type: pandas.CSVDataset
   filepath: data/02_intermediate/ingested_data.csv
 
+wine_ingested_data:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/wine_ingested_data.csv
 
 ref_data:
   type: pandas.CSVDataset

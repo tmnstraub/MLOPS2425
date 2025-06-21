@@ -4,7 +4,7 @@ import pickle
 import sys
 import pandas as pd
 from kedro.io import DataCatalog
-from streamlit_ydata_profiling import st_profile_report
+from ydata_profiling import ProfileReport
 
 st.title('Data Catalog from Kedro')
 
@@ -21,7 +21,8 @@ configure_project(package_name)
 from kedro.config import OmegaConfigLoader
 from kedro.framework.project import settings
 
-conf_path = str(Path('..') / settings.CONF_SOURCE)
+# Fix config path to point to project root conf directory
+conf_path = str(Path(__file__).resolve().parent.parent.parent / settings.CONF_SOURCE)
 conf_loader = OmegaConfigLoader(conf_source=conf_path)
 catalog = conf_loader["catalog"]
 
@@ -52,16 +53,16 @@ choice = st.radio('**Available Dataset:**',list(catalog.keys()), index= 0)
 st.write("Important: Do not try to generate a report on a non csv object of the Data Catalog")
 from kedro.io import DataCatalog
 
-catalog[choice]["filepath"] = "../" + catalog[choice]["filepath"]
-
 datacatalog = DataCatalog.from_config(catalog)
 
 dataset = datacatalog.load(choice)
 
 from ydata_profiling import ProfileReport
+import streamlit as st
 
-profile = ProfileReport(dataset, title=f"Bank Profiling Report", minimal=True)
+profile = ProfileReport(dataset, title="Wine Profiling Report")
+st.components.v1.html(profile.to_html(), height=1000, scrolling=True)
 
 if choice != '':
     if stateful_button(f'**Generate report on data**', key=f'**Generate report on data**'):
-        st_profile_report(profile, navbar=True)
+        ProfileReport(profile, navbar=True)

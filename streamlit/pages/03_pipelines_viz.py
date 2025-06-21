@@ -1,7 +1,7 @@
 # streamlit libray
 import streamlit as st
 import streamlit.components.v1 as components
-from streamlit_ydata_profiling import st_profile_report
+from ydata_profiling import ProfileReport
 from pathlib import Path
 from kedro.framework.project import configure_project
 import time
@@ -40,10 +40,10 @@ def launch_kedro_viz_server(reporter):
         reporter.warning('Starting visualization server...')
         time.sleep(3)
         # server thread will remain active as long as streamlit thread is running, or is manually shutdown
-        good_process = subprocess.run(["kedro", "viz","--no-browser"], cwd="../", capture_output=True, text=True)
-        # good_process.start()
-        #thread = threading.Thread(name='Kedro-Viz', target=_run_job, args=(job,), daemon=True,)
-        #thread.start()
+        project_root = str(Path(__file__).resolve().parent.parent.parent)
+        proc = subprocess.Popen([
+            "kedro", "viz", "--no-browser"
+        ], cwd=project_root)
         reporter.info('Waiting for server response...')
         time.sleep(3)
 

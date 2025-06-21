@@ -8,7 +8,7 @@ readme = "README.md"
 dynamic = ["dependencies", "version"]
 
 [project.scripts]
-bank-full-project = "wine_project.__main__:main"
+wine-full-project = "wine_project.__main__:main"
 
 [project.entry-points."kedro.hooks"]
 

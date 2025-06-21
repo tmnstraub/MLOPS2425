@@ -1,7 +1,7 @@
 # streamlit libray
 import streamlit as st
 import streamlit.components.v1 as components
-from streamlit_ydata_profiling import st_profile_report
+from ydata_profiling import ProfileReport
 from pathlib import Path
 from kedro.framework.project import configure_project
 import time
@@ -39,8 +39,12 @@ def launch_mlflow_server(reporter):
         reporter.warning('Starting visualization server...')
         time.sleep(3)
         # server thread will remain active as long as streamlit thread is running, or is manually shutdown
-        good_process = subprocess.run(["mlflow", "server", "--host=127.0.0.1", "--port=8080","--artifacts-destination=./ml_artifacts", "--default-artifact-root=./ml_artifacts"], cwd="C://Users//rosan//OneDrive//Desktop//MLOps_2025//MLOps_project//04_week", capture_output=True, text=True)
-        good_process.kill()
+        project_root = str(Path(__file__).resolve().parent.parent.parent)
+        # Use Popen for long-running server
+        proc = subprocess.Popen([
+            "mlflow", "server", "--host=127.0.0.1", "--port=8080",
+            "--artifacts-destination=./ml_artifacts", "--default-artifact-root=./ml_artifacts"
+        ], cwd=project_root)
         reporter.info('Waiting for server response...')
         time.sleep(3)
 
