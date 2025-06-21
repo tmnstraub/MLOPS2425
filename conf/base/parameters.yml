@@ -24,4 +24,6 @@ columns_to_fill:
   - country
   - region_1
   - taster_name
+  - province
+na_values_col_drop:
   - variety

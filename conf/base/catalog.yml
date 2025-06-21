@@ -20,6 +20,9 @@ wine_ingested_data:
   type: pandas.CSVDataset
   filepath: data/02_intermediate/wine_ingested_data.csv
 
+# wine_preprocessed_intermediate:
+  # type: kedro_datasets.pandas.MemoryDataset
+
 wine_preprocessed:
   type: pandas.CSVDataset
   filepath: data/03_primary/wine_preprocessed.csv

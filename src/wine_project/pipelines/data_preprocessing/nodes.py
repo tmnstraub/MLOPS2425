@@ -7,8 +7,8 @@ import pandas as pd
 from great_expectations.core import ExpectationSuite, ExpectationConfiguration
 import typing as t
 
-# def drop_col(parameters: t.Dict, df: pd.DataFrame) -> pd.DataFrame:
-    # return df.drop(columns = parameters)
+def drop_col(parameters: t.Dict, df: pd.DataFrame) -> pd.DataFrame:
+    return df.drop(columns = parameters)
 
 
 def na_col_to_unknown(df: pd.DataFrame, parameters: t.Dict[str, t.Any]) -> pd.DataFrame:
@@ -23,3 +23,7 @@ def na_col_to_unknown(df: pd.DataFrame, parameters: t.Dict[str, t.Any]) -> pd.Da
 
     return df
     
+# create me a finciton which drops the row for a list of colums if the value is na
+def drop_row(parameters: t.Dict, df: pd.DataFrame) -> pd.DataFrame:
+    return df.dropna(subset=parameters)
+

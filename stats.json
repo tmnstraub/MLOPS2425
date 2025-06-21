@@ -1,1 +1,1 @@
-{"wine_ingested_data": {"rows": 88224, "columns": 9, "file_size": 6893042}, "wine_preprocessed": {"rows": 88224, "columns": 9, "file_size": 7130475}}
+{"wine_ingested_data": {"rows": 88224, "columns": 9, "file_size": 6893042}, "wine_preprocessed_intermediate": {"rows": 88223, "columns": 9}, "wine_preprocessed": {"rows": 88223, "columns": 9, "file_size": 7130813}}
