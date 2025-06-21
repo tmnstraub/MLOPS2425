@@ -152,6 +152,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+uv.lock
 
 # mkdocs documentation
 /site
@@ -161,3 +162,20 @@ venv.bak/
 
 # mlflow local runs
 mlruns/*
+=======
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.DS_Store
+
+# Virtual environments
+.venv
+pyproject.toml
+uv.lock
+
+# Folders
+Practical Classes-20250616/
