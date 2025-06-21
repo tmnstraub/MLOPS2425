@@ -20,3 +20,8 @@ drop_col_options:
   - taster_twitter_handle
   - title
   - winery
+columns_to_fill:
+  - country
+  - region_1
+  - taster_name
+  - variety
