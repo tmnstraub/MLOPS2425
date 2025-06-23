@@ -10,4 +10,20 @@ import typing as t
 def drop_col(parameters: t.Dict, df: pd.DataFrame) -> pd.DataFrame:
     return df.drop(columns = parameters)
 
+
+def na_col_to_unknown(df: pd.DataFrame, parameters: t.Dict[str, t.Any]) -> pd.DataFrame:
+   
+    for col in parameters:
+        # It's good practice to check if the column exists in the DataFrame
+        if col in df.columns:
+            df[col] = df[col].fillna('unknown')
+        else:
+            # You could add a log or a print statement here to warn about missing columns
+            print(f"Warning: Column '{col}' not found in the DataFrame and was skipped.")
+
+    return df
     
+# create me a finciton which drops the row for a list of colums if the value is na
+def drop_row(parameters: t.Dict, df: pd.DataFrame) -> pd.DataFrame:
+    return df.dropna(subset=parameters)
+

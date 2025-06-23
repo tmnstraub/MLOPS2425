@@ -20,6 +20,13 @@ wine_ingested_data:
   type: pandas.CSVDataset
   filepath: data/02_intermediate/wine_ingested_data.csv
 
+# wine_preprocessed_intermediate:
+  # type: kedro_datasets.pandas.MemoryDataset
+
+wine_preprocessed:
+  type: pandas.CSVDataset
+  filepath: data/03_primary/wine_preprocessed.csv
+
 ref_data:
   type: pandas.CSVDataset
   filepath: data/02_intermediate/ref_data.csv
@@ -27,7 +34,6 @@ ref_data:
 ana_data:
   type: pandas.CSVDataset
   filepath: data/02_intermediate/ana_data.csv
-
 
 reporting_data_train:
   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
@@ -61,7 +67,6 @@ y_train_data:
   type: pandas.CSVDataset
   filepath: data/05_model_input/y_train.csv
 
-
 X_test_data:
   type: pandas.CSVDataset
   filepath: data/05_model_input/X_test.csv
@@ -75,7 +80,6 @@ production_columns:
   dataset:
     type: pickle.PickleDataset
     filepath: data/06_models/production_cols.pkl
-
 
 best_columns:
   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
@@ -98,7 +102,6 @@ production_model_metrics:
 drift_result:
   type: pandas.CSVDataset
   filepath: data/08_reporting/drift_result.csv
-
 
 output_plot:
   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
