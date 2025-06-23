@@ -27,3 +27,7 @@ columns_to_fill:
   - province
 na_values_col_drop:
   - variety
+split_data_and_validate:
+  target_column: "price"
+  test_fraction: 0.2
+  random_state: 42
