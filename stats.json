@@ -1,1 +1,1 @@
-{"wine_raw_data": {"rows": 129971, "columns": 14, "file_size": 52908707}, "wine_ingested_data": {"rows": 129971, "columns": 9, "file_size": 10201888}}
+{"wine_preprocessed": {"rows": 88223, "columns": 9, "file_size": 7130813}, "X_train": {"rows": 70578, "columns": 8}, "X_test": {"rows": 17645, "columns": 8}}

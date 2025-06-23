@@ -11,3 +11,23 @@ baseline_model_params:
   max_depth: 6
   max_features: 20
   random_state: 2021
+drop_col_options:
+  - designation
+  - province
+  - region_1
+  - region_2
+  - taster_name
+  - taster_twitter_handle
+  - title
+  - winery
+columns_to_fill:
+  - country
+  - region_1
+  - taster_name
+  - province
+na_values_col_drop:
+  - variety
+split_data_and_validate:
+  target_column: "price"
+  test_fraction: 0.2
+  random_state: 42

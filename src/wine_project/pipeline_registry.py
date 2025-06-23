@@ -54,6 +54,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     feature_selection = feature_selection_pipeline.create_pipeline()
     preprocess_batch_pipeline = preprocessing_batch.create_pipeline()
     model_predict_pipeline = model_predict.create_pipeline()
+    data_preprocessing_pipeline = data_preprocessing.create_pipeline()
 
     return {
         "ingestion": ingestion_pipeline,
@@ -69,5 +70,5 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "preprocess_batch": preprocess_batch_pipeline,
         "inference" : model_predict_pipeline,
         "production_full_prediction_process" : preprocess_batch_pipeline + model_predict_pipeline,
-  
+        'data_preprocessing': data_preprocessing_pipeline
     }
