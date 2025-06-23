@@ -30,7 +30,14 @@ def split_data(
     X = data.drop(columns=parameters["target_column"], axis=1)
     X = X.drop(columns="index", axis=1)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=parameters["test_fraction"], random_state=parameters["random_state"])
+    # # Filter out rare classes (those with only 1 occurrence)
+    # value_counts = y.value_counts()
+    # valid_classes = value_counts[value_counts >= 2].index
+    # mask = y.isin(valid_classes)
+    # X = X[mask]
+    # y = y[mask]
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=parameters["test_fraction"], random_state=parameters["random_state"])
 
     return X_train, X_test, y_train, y_test, X_train.columns
 
