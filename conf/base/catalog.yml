@@ -27,14 +27,6 @@ wine_preprocessed:
   type: pandas.CSVDataset
   filepath: data/03_primary/wine_preprocessed.csv
 
-ref_data:
-  type: pandas.CSVDataset
-  filepath: data/02_intermediate/ref_data.csv
-
-ana_data:
-  type: pandas.CSVDataset
-  filepath: data/02_intermediate/ana_data.csv
-
 reporting_data_train:
   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
   dataset:
@@ -59,21 +51,29 @@ encoder_transform:
     type: pickle.PickleDataset
     filepath: data/04_feature/encoder.pkl
 
-X_train_data:
+X_train:
   type: pandas.CSVDataset
   filepath: data/05_model_input/X_train.csv
 
-y_train_data:
+y_train:
   type: pandas.CSVDataset
   filepath: data/05_model_input/y_train.csv
 
-X_test_data:
+X_test:
   type: pandas.CSVDataset
   filepath: data/05_model_input/X_test.csv
 
-y_test_data:
+y_test:
   type: pandas.CSVDataset
   filepath: data/05_model_input/y_test.csv 
+
+X_train_engineered:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/X_train_engineered.csv
+  
+X_test_engineered:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/X_test_engineered.csv
 
 production_columns:
   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
@@ -108,4 +108,8 @@ output_plot:
   dataset:
     type: matplotlib.MatplotlibWriter
     filepath: data/08_reporting/shap_plot.png
+
+feature_names:
+  type: pickle.PickleDataset
+  filepath: data/05_model_input/feature_names.pkl
 
