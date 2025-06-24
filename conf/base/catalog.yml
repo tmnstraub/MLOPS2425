@@ -108,6 +108,6 @@ output_plot:
 
 
 champion_model:
-  type: pickle.PickleDataSet
+  type: pickle.PickleDataset
   filepath: data/06_models/champion_model.pkl
-  layer: models
+  #layer: models
