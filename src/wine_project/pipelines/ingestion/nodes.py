@@ -58,7 +58,7 @@ def build_expectation_suite(expectation_suite_name: str, feature_group: str, col
         ExpectationSuite: A dictionary containing all the expectations for this particular feature group.
     """
     
-    expectation_suite_bank = ExpectationSuite(
+    expectation_suite_wine = ExpectationSuite(
         expectation_suite_name=expectation_suite_name
     )
     
@@ -69,7 +69,7 @@ def build_expectation_suite(expectation_suite_name: str, feature_group: str, col
     # numerical features
     if feature_group == 'numerical_features':
         if 'points' in columns:
-            expectation_suite_bank.add_expectation(
+            expectation_suite_wine.add_expectation(
                 ExpectationConfiguration(
                     expectation_type="expect_column_values_to_be_in_type_list",
                     kwargs={"column": "points", "type_list": ["int64"]},
@@ -81,7 +81,7 @@ def build_expectation_suite(expectation_suite_name: str, feature_group: str, col
         for col in categorical_cols:
             # Only add expectations for columns that exist in this feature group
             if col in columns:
-                expectation_suite_bank.add_expectation(
+                expectation_suite_wine.add_expectation(
                     ExpectationConfiguration(
                         expectation_type="expect_column_values_to_be_of_type",
                         kwargs={"column": col, "type_": "str"},
@@ -90,14 +90,14 @@ def build_expectation_suite(expectation_suite_name: str, feature_group: str, col
 
     if feature_group == 'target':
         if 'price' in columns:
-            expectation_suite_bank.add_expectation(
+            expectation_suite_wine.add_expectation(
                 ExpectationConfiguration(
                     expectation_type="expect_column_values_to_be_in_type_list",
                     kwargs={"column": "price", "type_list": ["float64"]},
                 )
             )
     
-    return expectation_suite_bank
+    return expectation_suite_wine
 
 import hopsworks
 

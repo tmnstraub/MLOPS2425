@@ -3,16 +3,17 @@
   "expectation_suite_name": "Wine",
   "expectations": [
     {
-      "expectation_type": "expect_column_values_to_be_of_type",
+      "expectation_type": "expect_column_values_to_be_between",
       "kwargs": {
-        "column": "price",
-        "type_": "float"
+        "column": "points",
+        "max_value": 100,
+        "min_value": 0
       },
       "meta": {}
     }
   ],
   "ge_cloud_id": null,
   "meta": {
-    "great_expectations_version": "0.17.23"
+    "great_expectations_version": "0.18.12"
   }
 }
