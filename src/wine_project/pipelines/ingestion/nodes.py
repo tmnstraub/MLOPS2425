@@ -154,9 +154,8 @@ def to_feature_store(
     import re
     data = data.copy()
     
-    # Ensure there is an index column
-    if 'index' not in data.columns:
-        data['index'] = range(len(data))
+    # Use row_id instead of index
+    data['row_id'] = range(len(data))
     
     # Ensure datetime column exists and is properly formatted
     if 'datetime' not in data.columns:
@@ -186,7 +185,7 @@ def to_feature_store(
     schema = []
     for col in data.columns:
         col_type = None
-        if col == 'index':
+        if col == 'row_id':
             col_type = 'int'
         elif col == 'datetime':
             col_type = 'timestamp'
@@ -225,7 +224,7 @@ def to_feature_store(
                 name=group_name,
                 version=feature_group_version,
                 description=description,
-                primary_key=["index"],
+                primary_key=["row_id"],
                 event_time="datetime",
                 online_enabled=False,
                 expectation_suite=validation_expectation_suite,
@@ -244,7 +243,7 @@ def to_feature_store(
                 name=group_name,
                 version=feature_group_version,
                 description=description,
-                primary_key=["index"],
+                primary_key=["row_id"],
                 event_time="datetime",
                 online_enabled=False,
                 expectation_suite=validation_expectation_suite,
@@ -391,10 +390,20 @@ def ingestion(
     for col in unnamed_cols:
         df_clean = df_clean.drop(columns=[col])
     
-    # Reset index to ensure we have a clean index column
+    # Reset index to ensure we have a clean index 
     df_clean = df_clean.reset_index(drop=True)
-    # Add explicit index column for feature store
-    df_clean["index"] = df_clean.index
+    
+    # We're no longer adding an explicit index column
+    
+    # Remove any existing index or df_index columns if they exist
+    if "df_index" in df_clean.columns:
+        logger.info("Found df_index column, dropping it")
+        df_clean = df_clean.drop(columns=["df_index"])
+    
+    if "index" in df_clean.columns:
+        logger.info("Found index column, dropping it")
+        df_clean = df_clean.drop(columns=["index"])
+    
     # Create a proper datetime column
     df_clean["datetime"] = pd.to_datetime("2025-01-01")
 
@@ -495,12 +504,12 @@ def ingestion(
         if col not in unique_numerical_features:
             unique_numerical_features.append(col)
     
-    df_full_numeric = df_clean[["index", "datetime"] + unique_numerical_features].copy()
+    df_full_numeric = df_clean[["datetime"] + unique_numerical_features].copy()
     logger.info(f"Numerical features columns in df_full_numeric: {df_full_numeric.columns.tolist()}")
     logger.info(f"Numerical features dtypes: {df_full_numeric.dtypes}")
     
-    df_full_categorical = df_clean[["index", "datetime"] + categorical_features].copy()
-    df_full_target = df_clean[["index", "datetime"] + [parameters["target_column"]]].copy()
+    df_full_categorical = df_clean[["datetime"] + categorical_features].copy()
+    df_full_target = df_clean[["datetime"] + [parameters["target_column"]]].copy()
 
     if parameters.get("to_feature_store", False):
         try:
