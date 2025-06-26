@@ -97,7 +97,7 @@ anonymous_usage_statistics:
   data_context_id: 718dc160-d300-42de-81e1-78ff85b211f6
   enabled: true
 fluent_datasources:
-  bank_datasource:
+  wine_datasource:
     type: pandas
     assets:
       test:

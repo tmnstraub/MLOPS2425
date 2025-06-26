@@ -24,11 +24,9 @@ from wine_project.pipelines import (
     data_unit_tests as data_tests,
     data_preprocessing,
     split_train_pipeline as split_train,
-    model_selection,
-    model_train,
-    feature_selection,
-    split_data,
-    preprocessing_batch,
+    # model_selection,
+    # model_train,
+    # feature_selection,
     model_predict,
     feature_engineering
 )
@@ -40,27 +38,29 @@ def register_pipelines() -> Dict[str, Pipeline]:
         A mapping from a pipeline name to a ``Pipeline`` object.
     """
     ingestion_pipeline = data_ingestion.create_pipeline()
-    split_data_pipeline = split_data.create_pipeline()
-    feature_engineering_pipeline = feature_engineering.create_pipeline()  # Fixed: removed underscore
+    feature_engineering_pipeline = feature_engineering.create_pipeline()
     data_unit_tests_pipeline = data_tests.create_pipeline()
     split_train_pipeline = split_train.create_pipeline()
-    model_train_pipeline = model_train.create_pipeline()  # Fixed
-    model_selection_pipeline = model_selection.create_pipeline()  # Fixed
-    feature_selection_pipeline = feature_selection.create_pipeline()  # Fixed
-    preprocess_batch_pipeline = preprocessing_batch.create_pipeline()
+    # model_train_pipeline = model_train.create_pipeline()
+    # model_selection_pipeline = model_selection.create_pipeline()
+    # feature_selection_pipeline = feature_selection.create_pipeline()
     model_predict_pipeline = model_predict.create_pipeline()
     data_preprocessing_pipeline = data_preprocessing.create_pipeline()
 
+    # Create a combined pipeline with all nodes that shows the sequential workflow
+    # This allows visualizing the entire ML workflow in Kedro-Viz
+    combined_pipeline = ingestion_pipeline + data_unit_tests_pipeline + data_preprocessing_pipeline + split_train_pipeline + feature_engineering_pipeline + model_predict_pipeline
+    
     return {
         "ingestion": ingestion_pipeline,
         "data_unit_tests": data_unit_tests_pipeline,
         "data_preprocessing": data_preprocessing_pipeline,
         "split_train": split_train_pipeline,
-        #"split_data": split_data_pipeline,
         "feature_engineering": feature_engineering_pipeline,
-        "feature_selection": feature_selection_pipeline,
-        "model_selection": model_selection_pipeline,
-        "model_train": model_train_pipeline,
-        "preprocess_batch": preprocess_batch_pipeline,
-        "inference": model_predict_pipeline
+        # "feature_selection": feature_selection_pipeline,
+        # "model_selection": model_selection_pipeline,
+        # "model_train": model_train_pipeline,
+        "inference": model_predict_pipeline,
+        # Add default pipeline that combines all implemented pipelines in sequence
+        "__default__": combined_pipeline
     }
