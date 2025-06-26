@@ -105,12 +105,13 @@ def model_selection(X_train: pd.DataFrame,
                 models_dict[model_name] = (model, 'original', cat_features_idx)
             else:
                 models_dict[model_name] = (model, 'encoded', None)
+
+            run_id = mlflow.last_active_run().info.run_id
             
             # Log model and metrics
             mlflow.log_metric("rmse", rmse)
             mlflow.log_metric("r2", r2)
             
-            run_id = mlflow.last_active_run().info.run_id
             logger.info(f"Logged model : {model_name} in run {run_id}, MSE: {mse}, RMSE: {rmse}, R²: {r2}")
       # Lower RMSE is better, but we store negative RMSE, so we use max
     best_model_name = max(initial_results, key=initial_results.get)
@@ -150,8 +151,8 @@ def model_selection(X_train: pd.DataFrame,
         
         # Calculate and log RMSE from the best score (which is negative MSE)
         best_rmse = sqrt(-gridsearch.best_score_)
-        mlflow.log_metric("rmse", best_rmse)
-        mlflow.log_metric("r2", r2_score(y_val, best_model.predict(X_val_grid)))
+        mlflow.log_metric(mlflow.metrics.rmse())
+        mlflow.log_metric(mlflow.metrics.r2_score())
 
 
     logger.info(f"Hypertuned model best score: {best_rmse} (RMSE)")
