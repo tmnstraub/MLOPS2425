@@ -28,7 +28,8 @@ from wine_project.pipelines import (
     # model_train,
     # feature_selection,
     model_predict,
-    feature_engineering
+    feature_engineering,
+    data_drift
 )
 
 def register_pipelines() -> Dict[str, Pipeline]:
@@ -46,6 +47,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     # feature_selection_pipeline = feature_selection.create_pipeline()
     model_predict_pipeline = model_predict.create_pipeline()
     data_preprocessing_pipeline = data_preprocessing.create_pipeline()
+    data_drift_pipeline = data_drift.create_pipeline()
 
     # Create a combined pipeline with all nodes that shows the sequential workflow
     # This allows visualizing the entire ML workflow in Kedro-Viz
@@ -57,6 +59,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "data_preprocessing": data_preprocessing_pipeline,
         "split_train": split_train_pipeline,
         "feature_engineering": feature_engineering_pipeline,
+        'data_drift': data_drift_pipeline,
         # "feature_selection": feature_selection_pipeline,
         # "model_selection": model_selection_pipeline,
         # "model_train": model_train_pipeline,
