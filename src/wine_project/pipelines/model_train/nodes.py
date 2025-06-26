@@ -13,6 +13,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.ensemble import RandomForestClassifier
 import shap
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import OneHotEncoder
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +54,27 @@ def model_train(X_train: pd.DataFrame,
     results_dict = {}
     with mlflow.start_run(experiment_id=experiment_id, nested=True):
         if parameters["use_feature_selection"]:
+            #Todo: remove this when encoded dataset exists
+            # Identify categorical features
+            categorical_features = X_train.select_dtypes(include=['object', 'string', 'category']).columns.tolist() 
+
+            OH_encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
+            OH_cols_train = pd.DataFrame(
+            OH_encoder.fit_transform(X_train[categorical_features]),
+            index=X_train.index,
+            columns=OH_encoder.get_feature_names_out(categorical_features)
+            )
+        
+            OH_cols_test = pd.DataFrame(
+            OH_encoder.transform(X_test[categorical_features]),
+            index=X_test.index,
+            columns=OH_encoder.get_feature_names_out(categorical_features)
+            )
+        
+            # Create versions of X_train and X_test with one-hot encoded features for XGBoost
+            X_train_encoded = pd.concat([X_train.drop(categorical_features, axis=1), OH_cols_train], axis=1)
+            X_test_encoded = pd.concat([X_test.drop(categorical_features, axis=1), OH_cols_test], axis=1)
+
             logger.info(f"Using feature selection in model train...")
             X_train = X_train[best_columns]
             X_test = X_test[best_columns]
