@@ -1,6 +1,5 @@
 """
-This is a boilerplate pipeline 'data_preprocessing'
-generated using Kedro 0.19.13
+This pipeline handles preprocessing for the batch dataset (treated as unseen data)
 """
 
 import pandas as pd 
@@ -32,24 +31,18 @@ def drop_col(parameters: t.Dict, df: pd.DataFrame) -> pd.DataFrame:
     df = remove_index_column(df)
     return df.drop(columns = parameters)
 
-
-def na_col_to_unknown(df: pd.DataFrame, parameters: t.Dict[str, t.Any]) -> pd.DataFrame:
+def na_col_to_unknown(df: pd.DataFrame) -> pd.DataFrame:
     # Remove index column if it exists
     df = remove_index_column(df)
+
+    categorical_columns = df.select_dtypes(include=['object', 'string', 'category']).columns.tolist()
    
-    for col in parameters:
-        # It's good practice to check if the column exists in the DataFrame
-        if col in df.columns:
-            df[col] = df[col].fillna('unknown')
-        else:
-            # You could add a log or a print statement here to warn about missing columns
-            print(f"Warning: Column '{col}' not found in the DataFrame and was skipped.")
+    df[categorical_columns] = df[categorical_columns].fillna('unknown')
 
     return df
     
-# create me a finciton which drops the row for a list of colums if the value is na
-def drop_row(parameters: t.Dict, df: pd.DataFrame) -> pd.DataFrame:
-    return df.dropna(subset=parameters)
+# def drop_row(df: pd.DataFrame) -> pd.DataFrame:
+#     return df.dropna()
 
 def drop_zero_prices(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -78,3 +71,28 @@ def drop_zero_prices(df: pd.DataFrame) -> pd.DataFrame:
     
     return df
 
+def preprocess_train_data(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Main preprocessing function for the batch data. Uses the same preprocessing 
+    steps as the training data to ensure consistency.
+    
+    Args:
+        df: Batch data DataFrame
+    
+    Returns:
+        Preprocessed batch DataFrame
+    """
+    # Make a copy to avoid modifying the input
+    processed_df = df.copy()
+    
+    # Apply preprocessing steps in sequence
+    processed_df = remove_index_column(processed_df)
+    
+    # Apply common preprocessing steps
+    processed_df = drop_zero_prices(processed_df)
+
+    #Apply the unknown value replacement
+    processed_df = na_col_to_unknown(processed_df)
+    
+    return processed_df
+    
