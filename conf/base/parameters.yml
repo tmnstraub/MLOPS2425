@@ -22,13 +22,19 @@ drop_col_options:
   - taster_twitter_handle
   - title
   - winery
-columns_to_fill:
-  - country
-  - region_1
-  - taster_name
-  - province
-na_values_col_drop:
-  - variety
+# columns_to_fill:
+#   - country
+#   - region_1
+#   - taster_name
+#   - province
+# na_values_col_drop:
+#   - variety
+na_columns_to_unknown:
+  - "country"
+  - "province"
+  - "region_1"
+  - "region_2"
+  - "variety"
 split_data_and_validate:
   target_column: "price"
   test_fraction: 0.2

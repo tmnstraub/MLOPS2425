@@ -3,8 +3,6 @@
 # Documentation for this file format can be found in "The Data Catalog"
 # Link: https://docs.kedro.org/en/stable/data/data_catalog.html
 
-
-
 wine_raw_data:
   type: pandas.CSVDataset
   filepath: data/01_raw/winemag-data-130k-v2.csv
@@ -16,17 +14,91 @@ wine_ingested_data:
   type: pandas.CSVDataset
   filepath: data/02_intermediate/wine_ingested_data.csv
 
-reporting_data_unit_test:
-    type: pandas.CSVDataset
-    filepath: data/08_reporting/reporting_data_unit_test.csv
+# Train-Batch Split outputs stored in 02_intermediate
+train_data:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/train_data.csv
+  save_args:
+    index: False
+
+batch_data:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/batch_data.csv
+  save_args:
+    index: False
 
 # wine_preprocessed_intermediate:
   # type: kedro_datasets.pandas.MemoryDataset
 
-wine_preprocessed:
+train_preprocessed:
   type: pandas.CSVDataset
-  filepath: data/03_primary/wine_preprocessed.csv
+  filepath: data/03_primary/train_preprocessed.csv
+  save_args:
+    index: False
 
+batch_preprocessed:
+  type: pandas.CSVDataset
+  filepath: data/03_primary/batch_preprocessed.csv
+  save_args:
+    index: False
+
+train_feature_engineered:
+  type: pandas.CSVDataset
+  filepath: data/04_feature/train_feature_engineered.csv
+  save_args:
+    index: False
+  
+train_feature_engineered_one_hot:
+  type: pandas.CSVDataset
+  filepath: data/04_feature/train_feature_engineered_one_hot.csv
+  save_args:
+    index: False
+  
+batch_feature_engineered:
+  type: pandas.CSVDataset
+  filepath: data/04_feature/batch_feature_engineered.csv
+  save_args:
+    index: False
+
+batch_feature_engineered_one_hot:
+  type: pandas.CSVDataset
+  filepath: data/04_feature/batch_feature_engineered_one_hot.csv
+  save_args:
+    index: False
+  
+# Train-Val Split outputs stored in 04_feature
+X_train:
+  type: pandas.CSVDataset
+  filepath: data/05_train_val_split/X_train.csv
+
+y_train:
+  type: pandas.CSVDataset
+  filepath: data/05_train_val_split/y_train.csv
+
+X_val:
+  type: pandas.CSVDataset
+  filepath: data/05_train_val_split/X_val.csv
+
+y_val:
+  type: pandas.CSVDataset
+  filepath: data/05_train_val_split/y_val.csv
+
+#dataset for one-hot encoded features
+X_train_one_hot:
+  type: pandas.CSVDataset
+  filepath: data/05_train_val_split/X_train_one_hot.csv
+
+y_train_one_hot:
+  type: pandas.CSVDataset
+  filepath: data/05_train_val_split/y_train_one_hot.csv
+
+X_val_one_hot:
+  type: pandas.CSVDataset
+  filepath: data/05_train_val_split/X_val_one_hot.csv
+
+y_val_one_hot:
+  type: pandas.CSVDataset
+  filepath: data/05_train_val_split/y_val_one_hot.csv
 # reporting_data_train:
 #   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
 #   dataset:
@@ -44,31 +116,6 @@ wine_preprocessed:
 #     type: pickle.PickleDataset
 #     filepath: data/04_feature/encoder.pkl
 
-# Train-test split outputs
-X_train:
-  type: pandas.CSVDataset
-  filepath: data/04_train_test_split/X_train.csv
-
-y_train:
-  type: pandas.CSVDataset
-  filepath: data/04_train_test_split/y_train.csv
-
-X_test:
-  type: pandas.CSVDataset
-  filepath: data/04_train_test_split/X_test.csv
-
-y_test:
-  type: pandas.CSVDataset
-  filepath: data/04_train_test_split/y_test.csv 
-
-# Feature engineered datasets
-X_train_engineered:
-  type: pandas.CSVDataset
-  filepath: data/05_feature/X_train_engineered.csv
-  
-X_test_engineered:
-  type: pandas.CSVDataset
-  filepath: data/05_feature/X_test_engineered.csv
 
 # production_columns:
 #   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
@@ -113,4 +160,11 @@ production_model_metrics:
 # feature_names:
 #   type: pickle.PickleDataset
 #   filepath: data/05_model_input/feature_names.pkl
+#   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+#   dataset:
+#     type: matplotlib.MatplotlibWriter
+#     filepath: data/08_reporting/shap_plot.png
 
+# feature_names:
+#   type: pickle.PickleDataset
+#   filepath: data/05_model_input/feature_names.pkl
