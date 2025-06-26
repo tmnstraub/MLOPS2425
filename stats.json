@@ -1,1 +1,1 @@
-{"wine_preprocessed": {"rows": 88223, "columns": 9, "file_size": 7130813}, "X_train": {"rows": 70578, "columns": 8}, "X_test": {"rows": 17645, "columns": 8}}
+{"X_train_engineered": {"rows": 67604, "columns": 13, "file_size": 8194677}, "X_test_engineered": {"rows": 16901, "columns": 13, "file_size": 2049318}, "y_train": {"rows": 67604, "columns": 1, "file_size": 338917}, "y_test": {"rows": 16901, "columns": 1, "file_size": 84806}}

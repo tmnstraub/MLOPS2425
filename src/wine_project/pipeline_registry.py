@@ -24,7 +24,7 @@ from wine_project.pipelines import (
     data_unit_tests as data_tests,
     data_preprocessing,
     split_train_pipeline as split_train,
-    # model_selection,
+    model_selection,
     # model_train,
     # feature_selection,
     model_predict,
@@ -42,7 +42,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     data_unit_tests_pipeline = data_tests.create_pipeline()
     split_train_pipeline = split_train.create_pipeline()
     # model_train_pipeline = model_train.create_pipeline()
-    # model_selection_pipeline = model_selection.create_pipeline()
+    model_selection_pipeline = model_selection.create_pipeline()
     # feature_selection_pipeline = feature_selection.create_pipeline()
     model_predict_pipeline = model_predict.create_pipeline()
     data_preprocessing_pipeline = data_preprocessing.create_pipeline()
@@ -58,7 +58,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "split_train": split_train_pipeline,
         "feature_engineering": feature_engineering_pipeline,
         # "feature_selection": feature_selection_pipeline,
-        # "model_selection": model_selection_pipeline,
+        "model_selection": model_selection_pipeline,
         # "model_train": model_train_pipeline,
         "inference": model_predict_pipeline,
         # Add default pipeline that combines all implemented pipelines in sequence
