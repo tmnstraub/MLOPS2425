@@ -12,10 +12,6 @@ wine_raw_data:
     index_col: 0
   #   sep: ';'
 
-ingested_data:
-  type: pandas.CSVDataset
-  filepath: data/02_intermediate/ingested_data.csv
-
 wine_ingested_data:
   type: pandas.CSVDataset
   filepath: data/02_intermediate/wine_ingested_data.csv
@@ -27,89 +23,84 @@ wine_preprocessed:
   type: pandas.CSVDataset
   filepath: data/03_primary/wine_preprocessed.csv
 
-reporting_data_train:
-  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
-  dataset:
-    type: json.JSONDataset
-    filepath: data/08_reporting/reporting_data_train.json
+# reporting_data_train:
+#   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+#   dataset:
+#     type: json.JSONDataset
+#     filepath: data/08_reporting/reporting_data_train.json
 
-reporting_tests:
-  type: pandas.CSVDataset
-  filepath: data/08_reporting/data_tests.csv
+# reporting_tests:
+#   type: pandas.CSVDataset
+#   filepath: data/08_reporting/data_tests.csv
 
-preprocessed_training_data:
-  type: pandas.CSVDataset
-  filepath: data/03_primary/preprocessed_train_data.csv
 
-preprocessed_batch_data:
-  type: pandas.CSVDataset
-  filepath: data/03_primary/preprocessed_batch_data.csv
+# encoder_transform:
+#   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+#   dataset:
+#     type: pickle.PickleDataset
+#     filepath: data/04_feature/encoder.pkl
 
-encoder_transform:
-  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
-  dataset:
-    type: pickle.PickleDataset
-    filepath: data/04_feature/encoder.pkl
-
+# Train-test split outputs
 X_train:
   type: pandas.CSVDataset
-  filepath: data/05_model_input/X_train.csv
+  filepath: data/04_train_test_split/X_train.csv
 
 y_train:
   type: pandas.CSVDataset
-  filepath: data/05_model_input/y_train.csv
+  filepath: data/04_train_test_split/y_train.csv
 
 X_test:
   type: pandas.CSVDataset
-  filepath: data/05_model_input/X_test.csv
+  filepath: data/04_train_test_split/X_test.csv
 
 y_test:
   type: pandas.CSVDataset
-  filepath: data/05_model_input/y_test.csv 
+  filepath: data/04_train_test_split/y_test.csv 
 
+# Feature engineered datasets
 X_train_engineered:
   type: pandas.CSVDataset
-  filepath: data/05_model_input/X_train_engineered.csv
+  filepath: data/05_feature/X_train_engineered.csv
   
 X_test_engineered:
   type: pandas.CSVDataset
-  filepath: data/05_model_input/X_test_engineered.csv
+  filepath: data/05_feature/X_test_engineered.csv
 
-production_columns:
-  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
-  dataset:
-    type: pickle.PickleDataset
-    filepath: data/06_models/production_cols.pkl
+# production_columns:
+#   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+#   dataset:
+#     type: pickle.PickleDataset
+#     filepath: data/06_models/production_cols.pkl
 
-best_columns:
-  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
-  dataset:
-    type: pickle.PickleDataset
-    filepath: data/06_models/best_cols.pkl
+# best_columns:
+#   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+#   dataset:
+#     type: pickle.PickleDataset
+#     filepath: data/06_models/best_cols.pkl
 
-production_model:
-  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
-  dataset:
-    type: pickle.PickleDataset
-    filepath: data/06_models/production_model.pkl
+# production_model:
+#   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+#   dataset:
+#     type: pickle.PickleDataset
+#     filepath: data/06_models/production_model.pkl
 
-production_model_metrics:
-  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
-  dataset:
-    type: json.JSONDataset
-    filepath: data/08_reporting/production_model_metrics.json
+# production_model_metrics:
+#   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+#   dataset:
+#     type: json.JSONDataset
+#     filepath: data/08_reporting/production_model_metrics.json
 
-drift_result:
-  type: pandas.CSVDataset
-  filepath: data/08_reporting/drift_result.csv
+# drift_result:
+#   type: pandas.CSVDataset
+#   filepath: data/08_reporting/drift_result.csv
 
-output_plot:
-  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
-  dataset:
-    type: matplotlib.MatplotlibWriter
-    filepath: data/08_reporting/shap_plot.png
+# output_plot:
+#   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+#   dataset:
+#     type: matplotlib.MatplotlibWriter
+#     filepath: data/08_reporting/shap_plot.png
 
-feature_names:
-  type: pickle.PickleDataset
-  filepath: data/05_model_input/feature_names.pkl
+# feature_names:
+#   type: pickle.PickleDataset
+#   filepath: data/05_model_input/feature_names.pkl
 

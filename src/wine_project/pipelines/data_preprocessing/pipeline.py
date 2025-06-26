@@ -4,7 +4,7 @@ generated using Kedro 0.19.13
 """
 
 from kedro.pipeline import node, Pipeline, pipeline  # noqa
-from .nodes import na_col_to_unknown, drop_row
+from .nodes import na_col_to_unknown, drop_row, drop_zero_prices
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -25,8 +25,15 @@ def create_pipeline(**kwargs) -> Pipeline:
                     "parameters": "params:columns_to_fill",
                     "df": "wine_preprocessed_intermediate"
                 },
-                outputs= "wine_preprocessed",
+                outputs= "wine_preprocessed_with_zeros",
                 name="na_col_values_to_unknown",
+            ),
+            
+                node(
+                func= drop_zero_prices,
+                inputs="wine_preprocessed_with_zeros",
+                outputs= "wine_preprocessed",
+                name="remove_zero_prices",
             ),
 
                 

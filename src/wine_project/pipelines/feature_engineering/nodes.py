@@ -1,6 +1,26 @@
 import pandas as pd
 import pycountry_convert as pc
 
+def remove_index_column(data):
+    """
+    Remove index column from the DataFrame.
+    
+    Args:
+        data: Pandas DataFrame that might have an index or df_index column
+        
+    Returns:
+        DataFrame with index column removed
+    """
+    # Check for 'df_index' column
+    if 'df_index' in data.columns:
+        data = data.drop(columns=['df_index'])
+    
+    # Check for 'index' column
+    if 'index' in data.columns:
+        data = data.drop(columns=['index'])
+    
+    return data
+
 def classify_points(score):
     if score < 85:
         return 'Low'
@@ -96,7 +116,12 @@ def get_continent(country_name):
     except:
         return 'Other'
 
+# This duplicate function is no longer needed as we've already defined remove_index_column
+# at the top of the file
+
 def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
+    # Remove index column if it exists
+    df = remove_index_column(df)
     df = df.copy()
 
     # Points category
