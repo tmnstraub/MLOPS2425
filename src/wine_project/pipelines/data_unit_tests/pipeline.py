@@ -13,8 +13,8 @@ def create_pipeline(**kwargs) -> Pipeline:
         [
             node(
                 func= test_data,
-                inputs="ingested_data",
-                outputs= "reporting_tests",
+                inputs="wine_ingested_data",
+                outputs= "reporting_data_unit_test",
                 name="data_unit_tests",
             ),
 

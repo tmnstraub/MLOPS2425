@@ -9,6 +9,8 @@ from typing import Any, Dict, Tuple
 import numpy as np
 import pandas as pd
 
+import great_expectations as gx
+
 from great_expectations.core.expectation_suite import ExpectationSuite
 from great_expectations.core import ExpectationConfiguration
 
@@ -68,8 +70,8 @@ def get_validation_results(checkpoint_result):
 
 
 def test_data(df):
-    context = gx.get_context(context_root_dir = "//..//..//gx")
-    datasource_name = "bank_datasource"
+    context = gx.get_context(context_root_dir="gx")
+    datasource_name = "wine_datasource"
     try:
         datasource = context.sources.add_pandas(datasource_name)
         logger.info("Data Source created.")
@@ -77,40 +79,20 @@ def test_data(df):
         logger.info("Data Source already exists.")
         datasource = context.datasources[datasource_name]
 
-    suite_bank = context.add_or_update_expectation_suite(expectation_suite_name="Wine")
-    
-    #add more expectations to your data
-    expectation_marital = ExpectationConfiguration(
-    expectation_type="expect_column_distinct_values_to_be_in_set",
-    kwargs={
-        "column": "marital",
-        "value_set" : ['married', 'single', 'divorced']
-    },
-        )
-    suite_bank.add_expectation(expectation_configuration=expectation_marital)
+    suite_wine = context.add_or_update_expectation_suite(expectation_suite_name="Wine")
 
-    expectation_balance = ExpectationConfiguration(
+    expectation_points = ExpectationConfiguration(
         expectation_type="expect_column_values_to_be_between",
         kwargs={
-            "column": "balance",
-            "max_value": 105000,
+            "column": "points",
+            "max_value": 100,
             "min_value": 0
         },
     )
-    suite_bank.add_expectation(expectation_configuration=expectation_balance)
-
-    expectation_age = ExpectationConfiguration(
-        expectation_type="expect_column_values_to_be_between",
-        kwargs={
-            "column": "age",
-            "max_value": 100,
-            "min_value": 18
-        },
-    )
-    suite_bank.add_expectation(expectation_configuration=expectation_age)
+    suite_wine.add_expectation(expectation_configuration=expectation_points)
 
 
-    context.add_or_update_expectation_suite(expectation_suite=suite_bank)
+    context.add_or_update_expectation_suite(expectation_suite=suite_wine)
 
     data_asset_name = "test"
     try:
@@ -139,9 +121,9 @@ def test_data(df):
 
     pd_df_ge = gx.from_pandas(df)
 
-    assert pd_df_ge.expect_column_values_to_be_of_type("duration", "int64").success == True
-    assert pd_df_ge.expect_column_values_to_be_of_type("marital", "str").success == True
-    #assert pd_df_ge.expect_table_column_count_to_equal(23).success == False
+    assert pd_df_ge.expect_column_values_to_be_of_type("points", "int64").success == True
+    assert pd_df_ge.expect_column_values_to_be_of_type("country", "str").success == True
+    assert pd_df_ge.expect_table_column_count_to_equal(9).success == True
 
     log = logging.getLogger(__name__)
     log.info("Data passed on the unit data tests")
