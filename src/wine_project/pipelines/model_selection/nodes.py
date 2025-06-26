@@ -28,9 +28,11 @@ def _get_or_create_experiment_id(experiment_name: str) -> str:
     return exp.experiment_id
      
 def model_selection(X_train: pd.DataFrame, 
-                    X_test: pd.DataFrame, 
+                    X_val: pd.DataFrame, 
+                    X_train_encoded: pd.DataFrame, 
+                    X_val_encoded: pd.DataFrame,
                     y_train: pd.DataFrame, 
-                    y_test: pd.DataFrame,
+                    y_val: pd.DataFrame,
                     champion_dict: Dict[str, Any],
                     champion_model : pickle.Pickler,
                     parameters: Dict[str, Any]):
@@ -41,9 +43,9 @@ def model_selection(X_train: pd.DataFrame,
     Args:
     --
         X_train (pd.DataFrame): Training features.
-        X_test (pd.DataFrame): val features.
+        X_val (pd.DataFrame): val features.
         y_train (pd.DataFrame): Training target.
-        y_test (pd.DataFrame): val target.
+        y_val (pd.DataFrame): val target.
         parameters (dict): Parameters defined in parameters.yml.
 
     Returns:
@@ -72,28 +74,6 @@ def model_selection(X_train: pd.DataFrame,
 
     logger.info('Starting first step of model selection : Comparing between model types')
     
-    # Prepare one-hot encoded data for XGBoost
-    if categorical_features:
-        # Create one-hot encoded version of data for XGBoost
-        OH_encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
-        OH_cols_train = pd.DataFrame(
-            OH_encoder.fit_transform(X_train[categorical_features]),
-            index=X_train.index,
-            columns=OH_encoder.get_feature_names_out(categorical_features)
-        )
-        
-        OH_cols_test = pd.DataFrame(
-            OH_encoder.transform(X_test[categorical_features]),
-            index=X_test.index,
-            columns=OH_encoder.get_feature_names_out(categorical_features)
-        )
-        
-        # Create versions of X_train and X_test with one-hot encoded features for XGBoost
-        X_train_encoded = pd.concat([X_train.drop(categorical_features, axis=1), OH_cols_train], axis=1)
-        X_test_encoded = pd.concat([X_test.drop(categorical_features, axis=1), OH_cols_test], axis=1)
-        
-        logger.info(f"Created one-hot encoded features for XGBoost. Original shape: {X_train.shape}, Encoded shape: {X_train_encoded.shape}")
-    
     for model_name, model in models_dict.items():
         with mlflow.start_run(experiment_id=experiment_id,nested=True):
             mlflow.sklearn.autolog(log_model_signatures=True, log_input_examples=True)
@@ -105,19 +85,19 @@ def model_selection(X_train: pd.DataFrame,
                 cat_features_idx = [X_train.columns.get_loc(col) for col in categorical_features] if categorical_features else None
                 model = CatBoostRegressor(cat_features=cat_features_idx, verbose=False)
                 model.fit(X_train, y_train_ravel)
-                y_pred = model.predict(X_test)
+                y_pred = model.predict(X_val)
                 logger.info(f"Trained CatBoost with categorical features: {cat_features_idx}")
                 
             # For XGBoost, use the one-hot encoded data
             elif model_name == 'XGBRegressor':
                 model.fit(X_train_encoded, y_train_ravel)
-                y_pred = model.predict(X_test_encoded)
+                y_pred = model.predict(X_val_encoded)
                 logger.info(f"Trained XGBoost with one-hot encoded features")
             
             # Calculate metrics
-            mse = mean_squared_error(y_test, y_pred)
+            mse = mean_squared_error(y_val, y_pred)
             rmse = sqrt(mse)  # Calculate RMSE
-            r2 = r2_score(y_test, y_pred)
+            r2 = r2_score(y_val, y_pred)
             initial_results[model_name] = -rmse  # Using negative RMSE for consistent comparison
             
             # Store the model and data format for later use
@@ -149,16 +129,16 @@ def model_selection(X_train: pd.DataFrame,
             if best_model_name == 'CatBoostRegressor':
                 base_model = CatBoostRegressor(cat_features=cat_features_idx, verbose=False)
                 X_train_grid = X_train
-                X_test_grid = X_test
+                X_val_grid = X_val
             else:
                 base_model = best_model
                 X_train_grid = X_train
-                X_test_grid = X_test
+                X_val_grid = X_val
         else:
             # For XGBoost, use the encoded data
             base_model = best_model
             X_train_grid = X_train_encoded
-            X_test_grid = X_test_encoded
+            X_val_grid = X_val_encoded
         
         # Use negative MSE for scoring since GridSearchCV maximizes the score
         gridsearch = GridSearchCV(base_model, param_grid, cv=2, scoring='neg_mean_squared_error', n_jobs=-1)
@@ -171,17 +151,17 @@ def model_selection(X_train: pd.DataFrame,
         # Calculate and log RMSE from the best score (which is negative MSE)
         best_rmse = sqrt(-gridsearch.best_score_)
         mlflow.log_metric("rmse", best_rmse)
-        mlflow.log_metric("r2", r2_score(y_test, best_model.predict(X_test_grid)))
+        mlflow.log_metric("r2", r2_score(y_val, best_model.predict(X_val_grid)))
 
 
     logger.info(f"Hypertuned model best score: {best_rmse} (RMSE)")
     
     # Calculate final metrics on val set
-    y_pred = best_model.predict(X_test_grid)
-    mse = mean_squared_error(y_test, y_pred)
+    y_pred = best_model.predict(X_val_grid)
+    mse = mean_squared_error(y_val, y_pred)
     rmse = sqrt(mse)
-    mae = mean_absolute_error(y_test, y_pred)
-    r2 = r2_score(y_test, y_pred)
+    mae = mean_absolute_error(y_val, y_pred)
+    r2 = r2_score(y_val, y_pred)
     
     logger.info(f"Final model metrics - MSE: {mse}, RMSE: {rmse}, MAE: {mae}, R²: {r2}")
 
