@@ -75,14 +75,18 @@ X_test_engineered:
   type: pandas.CSVDataset
   filepath: data/05_feature/X_test_engineered.csv
 
-univariate_drift_results:
-  type: kedro_datasets.pickle.PickleDataset
-  filepath: data/08_reporting/univariate_drift_results.pkl 
+# univariate_drift_results:
+#   type: kedro_datasets.pickle.PickleDataset
+#   filepath: data/08_reporting/univariate_drift_results.pkl 
 
-univariate_drift_plot:
-  type: kedro_datasets.plotly.PlotlyDataset
-  filepath: data/08_reporting/univariate_drift_plot.html
-  plotly_args: {}  
+# univariate_drift_plot:
+#   type: kedro_datasets.plotly.PlotlyDataset
+#   filepath: data/08_reporting/univariate_drift_plot.html
+#   plotly_args: {}  
+
+univariate_drift_results:
+  type: pandas.CSVDataset  # Change from pickle.PickleDataSet to pandas.CSVDataSet
+  filepath: data/08_reporting/univariate_drift_results.csv # Use .csv extension
 
 # production_columns:
 #   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset

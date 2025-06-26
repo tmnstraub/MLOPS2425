@@ -50,7 +50,7 @@ def detect_univariate_drift(
     ).fit(reference_data=reference_df_nml)
     
     results = calc.calculate(data=analysis_df_nml)
-    return results
+    return results.to_df()
 
 def estimate_regression_performance(
     reference_df: pd.DataFrame, 

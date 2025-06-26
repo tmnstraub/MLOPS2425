@@ -1,1 +1,1 @@
-{"wine_preprocessed": {"rows": 88223, "columns": 9, "file_size": 7130813}, "X_train": {"rows": 70578, "columns": 8}, "X_test": {"rows": 17645, "columns": 8}}
+{"wine_raw_data": {"rows": 129971, "columns": 13, "file_size": 52908706}, "wine_data_drift_test": {"rows": 1000, "columns": 13, "file_size": 421514}, "univariate_drift_results": {"rows": 1310, "columns": 11, "file_size": 190892}}
