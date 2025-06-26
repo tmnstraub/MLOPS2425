@@ -48,6 +48,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     data_preprocessing_pipeline = data_preprocessing.create_pipeline()
 
     # Create a combined pipeline with all nodes that shows the sequential workflow
+    # This allows visualizing the entire ML workflow in Kedro-Viz
     combined_pipeline = ingestion_pipeline + data_unit_tests_pipeline + data_preprocessing_pipeline + split_train_pipeline + feature_engineering_pipeline + model_predict_pipeline
     
     return {
