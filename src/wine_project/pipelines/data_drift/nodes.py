@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 import nannyml as nml
 from typing import Dict
+# from nannyml.results import Result
 
 # --- Helper Function ---
 def _add_timestamp_from_index(df: pd.DataFrame, ts_col_name: str) -> pd.DataFrame:
@@ -76,15 +77,11 @@ def estimate_regression_performance(
     results = perf_calc.calculate(data=analysis_df_nml)
     return results.to_df()
 
-def plot_drift_results(results_df: pd.DataFrame, params: Dict):
-    """Plots drift results and returns the figure for saving."""
+def plot_drift_results(results_obj) :
+    """Plots drift results from a NannyML Result object."""
     print("Plotting drift results...")
     
-    # Recreate the NannyML Results object, telling it which column to use for the x-axis
-    results_obj = nml.results.Result.from_df(
-        results_df,
-        timestamp_column_name=params['timestamp_column']
-    )
-    
+    # This part is now correct because results_obj is the full NannyML object
     figure = results_obj.plot(kind='drift')
+    
     return figure

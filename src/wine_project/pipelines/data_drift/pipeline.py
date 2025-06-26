@@ -32,12 +32,18 @@ def create_pipeline(**kwargs) -> Pipeline:
             outputs="univariate_drift_results",
             name="detect_drift_node"
         ),
+        # node(
+        #     func=plot_drift_results,
+        #     # Add the parameters as an input to the plotting node
+        #     inputs=["univariate_drift_results", "params:data_drift"],
+        #     outputs="univariate_drift_plot",
+        #     name="plot_drift_node"
+        # ),
         node(
-            func=plot_drift_results,
-            # Add the parameters as an input to the plotting node
-            inputs=["univariate_drift_results", "params:data_drift"],
-            outputs="univariate_drift_plot",
-            name="plot_drift_node"
+        func=plot_drift_results,
+        inputs="univariate_drift_results", 
+        outputs="univariate_drift_plot",
+        name="plot_drift_node"
         ),
         # You would do the same for your performance estimation and plotting nodes
     ])
