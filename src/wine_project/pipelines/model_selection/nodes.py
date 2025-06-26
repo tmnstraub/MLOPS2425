@@ -8,10 +8,12 @@ import pickle
 import warnings
 warnings.filterwarnings("ignore", category=Warning)
 
+from catboost import CatBoostRegressor
+from xgboost import XGBRegressor
 
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, root_mean_squared_error
+from math import sqrt
 
 import mlflow
 
@@ -50,8 +52,8 @@ def model_selection(X_train: pd.DataFrame,
     """
    
     models_dict = {
-        'RandomForestClassifier': RandomForestClassifier(),
-        'GradientBoostingClassifier': GradientBoostingClassifier(),
+        'CatBoostRegressor': CatBoostRegressor(),
+        'XGBRegressor': XGBRegressor(),
     }
 
     initial_results = {}   
@@ -63,36 +65,60 @@ def model_selection(X_train: pd.DataFrame,
 
 
     logger.info('Starting first step of model selection : Comparing between model types')
-
+    
     for model_name, model in models_dict.items():
         with mlflow.start_run(experiment_id=experiment_id,nested=True):
             mlflow.sklearn.autolog(log_model_signatures=True, log_input_examples=True)
             y_train = np.ravel(y_train)
-            model.fit(X_train, y_train)
-            initial_results[model_name] = model.score(X_test, y_test)
+            model.fit(X_train, y_train)            # For regression, lower MSE is better, so we store negative MSE
+            y_pred = model.predict(X_test)
+            mse = mean_squared_error(y_test, y_pred)
+            rmse = sqrt(mse)  # Calculate RMSE
+            r2 = r2_score(y_test, y_pred)
+            initial_results[model_name] = -rmse  # Using negative RMSE for consistent comparison
+            
+            # Log model and metrics
+            mlflow.log_metric("rmse", rmse)
+            mlflow.log_metric("r2", r2)
+            
             run_id = mlflow.last_active_run().info.run_id
-            logger.info(f"Logged model : {model_name} in run {run_id}")
-    
+            logger.info(f"Logged model : {model_name} in run {run_id}, MSE: {mse}, RMSE: {rmse}, R²: {r2}")
+      # Lower RMSE is better, but we store negative RMSE, so we use max
     best_model_name = max(initial_results, key=initial_results.get)
     best_model = models_dict[best_model_name]
 
-    logger.info(f"Best model is {best_model_name} with score {initial_results[best_model_name]}")
-    logger.info('Starting second step of model selection : Hyperparameter tuning')
-
-    # Perform hyperparameter tuning with GridSearchCV
+    logger.info(f"Best model is {best_model_name} with RMSE: {-initial_results[best_model_name]}")
+    logger.info('Starting second step of model selection : Hyperparameter tuning')    # Perform hyperparameter tuning with GridSearchCV
     param_grid = parameters['hyperparameters'][best_model_name]
     with mlflow.start_run(experiment_id=experiment_id,nested=True):
-        gridsearch = GridSearchCV(best_model, param_grid, cv=2, scoring='accuracy', n_jobs=-1)
+        # Use negative MSE for scoring since GridSearchCV maximizes the score
+        gridsearch = GridSearchCV(best_model, param_grid, cv=2, scoring='neg_mean_squared_error', n_jobs=-1)
         gridsearch.fit(X_train, y_train)
         best_model = gridsearch.best_estimator_
+        
+        # Log best hyperparameters
+        mlflow.log_params(gridsearch.best_params_)
+        
+        # Calculate and log RMSE from the best score (which is negative MSE)
+        best_rmse = sqrt(-gridsearch.best_score_)
+        mlflow.log_metric("rmse", best_rmse)
+        mlflow.log_metric("r2", r2_score(y_test, best_model.predict(X_test)))
 
 
-    logger.info(f"Hypertunned model score: {gridsearch.best_score_}")
-    pred_score = accuracy_score(y_test, best_model.predict(X_test))
+    logger.info(f"Hypertuned model best score: {best_rmse} (RMSE)")
+    
+    # Calculate final metrics on test set
+    y_pred = best_model.predict(X_test)
+    rmse = root_mean_squared_error(y_test, y_pred)
+    mae = mean_absolute_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+    
+    logger.info(f"Final model metrics - MSE: {mse}, RMSE: {rmse}, MAE: {mae}, R²: {r2}")
 
-    if champion_dict['test_score'] < pred_score:
-        logger.info(f"New champion model is {best_model_name} with score: {pred_score} vs {champion_dict['test_score']} ")
+    # For regression, lower RMSE is better
+    if champion_dict['test_score'] > rmse:
+        logger.info(f"New champion model is {best_model_name} with RMSE: {rmse} vs {champion_dict['test_score']} ")
         return best_model
     else:
-        logger.info(f"Champion model is still {champion_dict['regressor']} with score: {champion_dict['test_score']} vs {pred_score} ")
+        logger.info(f"Champion model is still {champion_dict['regressor']} with RMSE: {champion_dict['test_score']} vs {rmse} ")
         return champion_model
