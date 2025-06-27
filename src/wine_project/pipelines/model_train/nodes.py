@@ -47,9 +47,9 @@ def model_train(X_train: pd.DataFrame,
     # open pickle file with regressors
     try:
         with open(os.path.join(os.getcwd(), 'data', '06_models', 'champion_model.pkl'), 'rb') as f:
-            classifier = pickle.load(f)
+            regressor = pickle.load(f)
     except:
-        classifier = CatBoostClassifier(**parameters['baseline_model_params'])
+        regressor = CatBoostClassifier(**parameters['baseline_model_params'])
 
     results_dict = {}
     with mlflow.start_run(experiment_id=experiment_id, nested=True):
@@ -58,7 +58,14 @@ def model_train(X_train: pd.DataFrame,
             X_train = X_train[best_columns]
             X_val = X_val[best_columns]
         y_train = np.ravel(y_train)
-        model = classifier.fit(X_train, y_train)
+        if regressor.__class__.__name__ == 'CatBoostClassifier':
+            # CatBoost requires categorical features to be specified
+            categorical_features = X_train.select_dtypes(include=['object', 'string', 'category']).columns.tolist()
+            logger.info(f"Categorical features found: {categorical_features}")
+            cat_features_idx = [X_train.columns.get_loc(col) for col in categorical_features] if categorical_features else None
+            regressor.set_params(cat_features=cat_features_idx)
+
+        model = regressor.fit(X_train, y_train)
         # making predictions
         y_train_pred = model.predict(X_train)
         y_val_pred = model.predict(X_val)
@@ -66,7 +73,7 @@ def model_train(X_train: pd.DataFrame,
         rmse_train = root_mean_squared_error(y_train, y_train_pred)
         rmse_val = root_mean_squared_error(y_val, y_val_pred)
         # saving results in dict
-        results_dict['classifier'] = classifier.__class__.__name__
+        results_dict['regressor'] = regressor.__class__.__name__
         results_dict['train_score'] = rmse_train
         results_dict['val_score'] = rmse_val
         # logging in mlflow
