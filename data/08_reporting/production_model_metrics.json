@@ -1,5 +1,5 @@
 {
-  "classifier": "Placeholder_FirstSelection",
-  "train_rmse": 100000,
-  "val_rmse": 120000
+  "regressor": "CatBoostRegressor",
+  "train_score": 32.6144342241257,
+  "val_score": 35.20664828843352
 }
