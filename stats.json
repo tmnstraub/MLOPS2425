@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-{"wine_ingested_data": {"rows": 84506, "columns": 8, "file_size": 6110374}, "reporting_data_unit_test": {"rows": 10, "columns": 12, "file_size": 934}, "reporting_data_unit_test_visualized": {"rows": 10, "columns": 12, "file_size": null}}
-=======
 {"X_train": {"rows": 54096, "columns": 13, "file_size": 6559846}, "X_val": {"rows": 13525, "columns": 13, "file_size": 1640815}, "y_train": {"rows": 54096, "columns": 1, "file_size": 271180}, "y_val": {"rows": 13525, "columns": 1, "file_size": 67873}}
->>>>>>> origin/dev
