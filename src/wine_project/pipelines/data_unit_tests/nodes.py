@@ -70,6 +70,10 @@ def get_validation_results(checkpoint_result):
 
 
 def test_data(df):
+    # Add this at the beginning of the function to see what columns we actually have
+    logger.info(f"Actual columns in dataset: {df.columns.tolist()}")
+    logger.info(f"Column count: {len(df.columns)}")
+
     context = gx.get_context(context_root_dir="gx")
     datasource_name = "wine_datasource"
     try:
@@ -81,31 +85,84 @@ def test_data(df):
 
     suite_wine = context.add_or_update_expectation_suite(expectation_suite_name="Wine")
 
-    expectation_points = ExpectationConfiguration(
+    # SCHEMA VALIDATION - Check data types for all columns
+    suite_wine.add_expectation(ExpectationConfiguration(
+        expectation_type="expect_column_values_to_be_of_type",
+        kwargs={"column": "points", "type_": "int64"},
+    ))
+    
+    suite_wine.add_expectation(ExpectationConfiguration(
+        expectation_type="expect_column_values_to_be_of_type",
+        kwargs={"column": "price", "type_": "float64"},
+    ))
+    
+    suite_wine.add_expectation(ExpectationConfiguration(
+        expectation_type="expect_column_values_to_be_of_type",
+        kwargs={"column": "country", "type_": "object"},
+    ))
+    
+    suite_wine.add_expectation(ExpectationConfiguration(
+        expectation_type="expect_column_values_to_be_of_type",
+        kwargs={"column": "province", "type_": "object"},
+    ))
+    
+    suite_wine.add_expectation(ExpectationConfiguration(
+        expectation_type="expect_column_values_to_be_of_type",
+        kwargs={"column": "region_1", "type_": "object"},
+    ))
+    
+    suite_wine.add_expectation(ExpectationConfiguration(
+        expectation_type="expect_column_values_to_be_of_type",
+        kwargs={"column": "variety", "type_": "object"},
+    ))
+    
+    # Check expected column count
+    suite_wine.add_expectation(ExpectationConfiguration(
+        expectation_type="expect_table_column_count_to_equal",
+        kwargs={"value": 8},  
+    ))
+    
+    # VALUE RANGE VALIDATIONS
+    suite_wine.add_expectation(ExpectationConfiguration(
         expectation_type="expect_column_values_to_be_between",
         kwargs={
             "column": "points",
             "max_value": 100,
             "min_value": 0
         },
-    )
-    suite_wine.add_expectation(expectation_configuration=expectation_points)
-
+    ))
+    
+    # Check that price is greater than 0
+    suite_wine.add_expectation(ExpectationConfiguration(
+        expectation_type="expect_column_values_to_be_between",
+        kwargs={
+            "column": "price",
+            "min_value": 0,
+            "strict_min": True  # This ensures price > 0, not just >= 0
+        },
+    ))
+    
+    # Check for duplicates - expect the count of unique rows to equal total rows
+    suite_wine.add_expectation(ExpectationConfiguration(
+        expectation_type="expect_table_row_count_to_equal_other_table",
+        kwargs={
+            "other_table_row_count": len(df.drop_duplicates())
+        },
+    ))
 
     context.add_or_update_expectation_suite(expectation_suite=suite_wine)
 
     data_asset_name = "test"
     try:
-        data_asset = datasource.add_dataframe_asset(name=data_asset_name, dataframe= df)
+        data_asset = datasource.add_dataframe_asset(name=data_asset_name, dataframe=df)
     except:
-        logger.info("The data asset alread exists. The required one will be loaded.")
+        logger.info("The data asset already exists. The required one will be loaded.")
         data_asset = datasource.get_asset(data_asset_name)
 
-    batch_request = data_asset.build_batch_request(dataframe= df)
-
+    batch_request = data_asset.build_batch_request(dataframe=df)
 
     checkpoint = gx.checkpoint.SimpleCheckpoint(
-        name="checkpoint_marital",
+        name="checkpoint_wine",  # Changed from marital to wine
         data_context=context,
         validations=[
             {
@@ -117,16 +174,29 @@ def test_data(df):
     checkpoint_result = checkpoint.run()
 
     df_validation = get_validation_results(checkpoint_result)
-    #base on these results you can make an assert to stop your pipeline
-
+    
+    # Direct pandas-based assertions for critical validations
     pd_df_ge = gx.from_pandas(df)
 
+    # Schema validation
     assert pd_df_ge.expect_column_values_to_be_of_type("points", "int64").success == True
-    assert pd_df_ge.expect_column_values_to_be_of_type("country", "str").success == True
-    assert pd_df_ge.expect_table_column_count_to_equal(9).success == True
+    assert pd_df_ge.expect_column_values_to_be_of_type("price", "float64").success == True
+    assert pd_df_ge.expect_column_values_to_be_of_type("country", "object").success == True
+    
+    # Check for duplicates
+    assert len(df) == len(df.drop_duplicates()), "Duplicates found in the dataset"
+    
+    # Check price is greater than 0
+    assert (df["price"] > 0).all(), "Some price values are not greater than 0"
+    
+    # Check expected column count
+    expected_columns = ["points", "price", "country", "province", "region_1", "variety", "taster_name"]
+    for column in expected_columns:
+        assert column in df.columns, f"Expected column {column} not found in dataset"
+    
+    assert pd_df_ge.expect_table_column_count_to_equal(8).success == True, "Column count does not match expected value"
 
     log = logging.getLogger(__name__)
-    log.info("Data passed on the unit data tests")
+    log.info("Data passed all unit tests successfully")
   
-
     return df_validation
