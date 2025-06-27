@@ -142,7 +142,7 @@ best_columns:
   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
   dataset:
     type: pickle.PickleDataset
-    filepath: data/06_models/best_cols.pkl
+    filepath: data/06_models/champion_model.pkl
 
 production_model:
   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
