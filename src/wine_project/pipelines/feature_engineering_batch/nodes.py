@@ -160,21 +160,28 @@ def engineer_batch_features(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-def create_one_hot_encoded_features(df: pd.DataFrame) -> pd.DataFrame:
+def create_one_hot_encoded_features(df):
     """
-    Create one-hot encoded features from categorical columns using scikit-learn's OneHotEncoder.
+    Create one-hot encoded features from categorical columns.
     
     Args:
-        df: DataFrame with categorical columns
+        df: DataFrame with feature engineered data
         
     Returns:
         DataFrame with one-hot encoded features
     """
-    # Create a copy of the dataframe to avoid modifying the original
+    # Make a copy of the data
     df_encoded = df.copy()
     
+    # Check if 'is_blend' column exists before trying to encode it
+    if 'is_blend' in df_encoded.columns:
+        df_encoded['is_blend_True'] = df_encoded['is_blend'].fillna(False).astype(int)
+    else:
+        # Create the column with default value if it doesn't exist
+        df_encoded['is_blend_True'] = 0
+    
     # List of categorical columns to one-hot encode
-    categorical_columns = df.select_dtypes(include=['object', 'string', 'category']).columns.tolist()
+    categorical_columns = df_encoded.select_dtypes(include=['object', 'string', 'category']).columns.tolist()
     
     # Initialize the OneHotEncoder
     # Setting handle_unknown='ignore' to handle categories not seen during fit
@@ -196,12 +203,5 @@ def create_one_hot_encoded_features(df: pd.DataFrame) -> pd.DataFrame:
     
     # Concatenate the original dataframe with the encoded columns
     df_encoded = pd.concat([df_encoded.drop(columns=categorical_columns), encoded_df], axis=1)
-    
-    # One-hot encode the boolean column, handling NaN values
-    # Fill NaN values with False (0) before converting to int
-    df_encoded['is_blend_True'] = df_encoded['is_blend'].fillna(False).astype(int)
-    
-    # Drop the original is_blend column
-    df_encoded = df_encoded.drop(columns=['is_blend'])
     
     return df_encoded

@@ -143,12 +143,21 @@ def engineer_train_features(df: pd.DataFrame) -> pd.DataFrame:
     # Points category
     df['points_category'] = df['points'].apply(classify_points)
 
-    # Blend flag
-    df['is_blend'] = df['variety'].str.contains("Blend", case=False)
+    # Blend flag - ensure the variety column exists and is string type
+    if 'variety' in df.columns:
+        # Convert to string first to handle any non-string values
+        df['variety'] = df['variety'].astype(str)
+        # Create is_blend feature
+        df['is_blend'] = df['variety'].str.contains("blend", case=False)
+    else:
+        # Create a default is_blend column if variety doesn't exist
+        df['is_blend'] = False
 
     # Wine classification
     df['wine_type_main'] = df['variety'].apply(classify_wine_type_main)
-    df['wine_subtype'] = df['variety'].apply(classify_wine_subtype)    # Continent classification (standardize US/UK first)
+    df['wine_subtype'] = df['variety'].apply(classify_wine_subtype)
+    
+    # Continent classification (standardize US/UK first)
     df['country_standardized'] = df['country'].replace({
         'US': 'United States',
         'England': 'United Kingdom'
@@ -157,22 +166,30 @@ def engineer_train_features(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-def create_one_hot_encoded_features(df: pd.DataFrame) -> pd.DataFrame:
+def create_one_hot_encoded_features(df):
     """
-    Create one-hot encoded features from categorical columns using scikit-learn's OneHotEncoder.
+    Create one-hot encoded features from categorical columns.
     
     Args:
-        df: DataFrame with categorical columns
+        df: DataFrame with feature engineered data
         
     Returns:
         DataFrame with one-hot encoded features
     """
-    # Create a copy of the dataframe to avoid modifying the original
+    # Make a copy of the data
     df_encoded = df.copy()
     
+    # Check if 'is_blend' column exists before trying to encode it
+    if 'is_blend' in df_encoded.columns:
+        df_encoded['is_blend_True'] = df_encoded['is_blend'].fillna(False).astype(int)
+        # Only drop the original is_blend column if it exists
+        df_encoded = df_encoded.drop(columns=['is_blend'])
+    else:
+        # Create the column with default value if it doesn't exist
+        df_encoded['is_blend_True'] = 0
+    
     # List of categorical columns to one-hot encode
-    categorical_columns = df.select_dtypes(include=['object', 'string', 'category']).columns.tolist()
-
+    categorical_columns = df_encoded.select_dtypes(include=['object', 'string', 'category']).columns.tolist()
     
     # Initialize the OneHotEncoder
     # Setting handle_unknown='ignore' to handle categories not seen during fit
@@ -195,11 +212,5 @@ def create_one_hot_encoded_features(df: pd.DataFrame) -> pd.DataFrame:
     # Concatenate the original dataframe with the encoded columns
     df_encoded = pd.concat([df_encoded.drop(columns=categorical_columns), encoded_df], axis=1)
     
-    # One-hot encode the boolean column, handling NaN values
-    # Fill NaN values with False (0) before converting to int
-    df_encoded['is_blend_True'] = df_encoded['is_blend'].fillna(False).astype(int)
-    
-    # Drop the original is_blend column
-    df_encoded = df_encoded.drop(columns=['is_blend'])
-    
     return df_encoded
+    
