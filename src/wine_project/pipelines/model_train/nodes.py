@@ -10,7 +10,7 @@ import warnings
 warnings.filterwarnings("ignore", category=Warning)
 import mlflow
 from sklearn.metrics import root_mean_squared_error
-from catboost import CatBoostClassifier
+from catboost import CatBoostRegressor
 import shap
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import OneHotEncoder
@@ -48,24 +48,41 @@ def model_train(X_train: pd.DataFrame,
     try:
         with open(os.path.join(os.getcwd(), 'data', '06_models', 'champion_model.pkl'), 'rb') as f:
             regressor = pickle.load(f)
+            
+            # If we loaded a classifier instead of a regressor, convert it to a regressor
+            if regressor.__class__.__name__ == 'CatBoostRegressor':
+                logger.info("CatBoostRegressor")
+                # Extract params from the classifier to use for the regressor
+                params = regressor.get_params()
+                # Remove classifier-specific parameters that don't apply to regressors
+                for param in ['loss_function', 'classes_count', 'class_weights']:
+                    if param in params:
+                        del params[param]
+                # Create a new regressor with the same parameters
+                regressor = CatBoostRegressor(**params)
     except:
-        regressor = CatBoostClassifier(**parameters['baseline_model_params'])
+        regressor = CatBoostRegressor(**parameters['baseline_model_params'])
 
     results_dict = {}
     with mlflow.start_run(experiment_id=experiment_id, nested=True):
+        # Apply feature selection first
         if parameters["use_feature_selection"]:
             logger.info(f"Using feature selection in model train...")
             X_train = X_train[best_columns]
             X_val = X_val[best_columns]
+                
         y_train = np.ravel(y_train)
-        if regressor.__class__.__name__ == 'CatBoostClassifier':
+        if isinstance(regressor, CatBoostRegressor):
             # CatBoost requires categorical features to be specified
             categorical_features = X_train.select_dtypes(include=['object', 'string', 'category']).columns.tolist()
             logger.info(f"Categorical features found: {categorical_features}")
+            # Calculate indices based on current X_train columns
             cat_features_idx = [X_train.columns.get_loc(col) for col in categorical_features] if categorical_features else None
             regressor.set_params(cat_features=cat_features_idx)
 
         model = regressor.fit(X_train, y_train)
+        logger.info(f"Successfully trained {regressor.__class__.__name__} model on {X_train.shape[1]} features")
+        
         # making predictions
         y_train_pred = model.predict(X_train)
         y_val_pred = model.predict(X_val)
