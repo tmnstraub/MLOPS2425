@@ -157,6 +157,15 @@ output_plot:
     type: matplotlib.MatplotlibWriter
     filepath: data/08_reporting/shap_plot.png
 
+df_with_predict:
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/df_with_predict.csv
+
+# it is a dictionary store it in the same folder
+predict_describe:
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/predict_describe.csv
+
 # feature_names:
 #   type: pickle.PickleDataset
 #   filepath: data/05_model_input/feature_names.pkl

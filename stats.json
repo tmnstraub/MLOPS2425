@@ -1,1 +1,1 @@
-{"X_train": {"rows": 54096, "columns": 13, "file_size": 6559846}, "X_val": {"rows": 13525, "columns": 13, "file_size": 1640815}, "y_train": {"rows": 54096, "columns": 1, "file_size": 271180}, "y_val": {"rows": 13525, "columns": 1, "file_size": 67873}}
+{"batch_feature_engineered": {"rows": 16885, "columns": 14, "file_size": 2131091}, "df_with_predict": {"rows": 16885, "columns": 15, "file_size": 2442443}, "predict_describe": {"rows": 8, "columns": 3, "file_size": 300}}
