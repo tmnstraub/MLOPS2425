@@ -13,12 +13,6 @@ logger = logging.getLogger(__name__)
 def visualize_data_unit_test_results(df_validation):
     """
     Create visualizations from the data unit test results
-    
-    Args:
-        df_validation: DataFrame containing test results from Great Expectations
-        
-    Returns:
-        df_validation: The same DataFrame, passed through
     """
     logger.info("Creating data unit test visualizations...")
     
@@ -29,16 +23,39 @@ def visualize_data_unit_test_results(df_validation):
     df_validation.to_csv("data/08_reporting/data_unit_test_results.csv", index=False)
     logger.info("Saved raw test results to data/08_reporting/data_unit_test_results.csv")
     
-    # Plot 1: Success by expectation type
+    # Check if Test Description column exists, if not create it
+    if 'Test Description' not in df_validation.columns:
+        # Define mapping from expectation types to readable descriptions
+        description_map = {
+            "expect_table_column_count_to_equal": "Number of features in dataset",
+            "expect_column_values_to_be_between": "Value range check",
+            "expect_column_values_to_be_of_type": "Data type check",
+            "expect_table_row_count_to_equal_other_table": "No duplicate records check"
+        }
+        
+        # Add the column with mapped descriptions
+        df_validation['Test Description'] = df_validation['Expectation Type'].map(description_map)
+        
+        # Add more context based on column and parameters
+        for idx, row in df_validation.iterrows():
+            if not pd.isna(row['Column']) and row['Column']:
+                df_validation.at[idx, 'Test Description'] += f" ({row['Column']})"
+            
+            if row['Expectation Type'] == "expect_column_values_to_be_between":
+                min_val = row['Min Value'] if not pd.isna(row['Min Value']) else "any"
+                max_val = row['Max Value'] if not pd.isna(row['Max Value']) else "any"
+                df_validation.at[idx, 'Test Description'] += f" [{min_val} to {max_val}]"
+    
+    # Plot 1: Success by test type (using Test Description)
     plt.figure(figsize=(12, 8))
     plt.subplot(2, 1, 1)
     
-    success_by_type = df_validation.groupby('Expectation Type')['Success'].mean().sort_values()
+    # Always use Test Description instead of Expectation Type
+    success_by_type = df_validation.groupby('Test Description')['Success'].mean().sort_values()
     ax = success_by_type.plot(kind='barh', color='teal')
-    plt.title('Success Rate by Expectation Type', fontsize=14)
+    plt.title('Success Rate by Test Type', fontsize=14)
     plt.xlabel('Success Rate')
-    plt.ylabel('Expectation Type')
-    # Add percentage labels
+    plt.ylabel('Test Type')
     for i, v in enumerate(success_by_type):
         ax.text(v + 0.01, i, f"{v:.0%}", va='center')
     
@@ -57,17 +74,20 @@ def visualize_data_unit_test_results(df_validation):
     # Plot 3: Detailed test results by column
     if 'Column' in df_validation.columns:
         plt.figure(figsize=(12, 8))
-        column_results = df_validation.groupby(['Column', 'Expectation Type'])['Success'].mean().unstack()
-        
-        if not column_results.empty:
-            column_results.plot(kind='bar', stacked=False)
-            plt.title('Test Success by Column and Type', fontsize=14)
-            plt.xlabel('Column')
-            plt.ylabel('Success Rate')
-            plt.legend(title='Expectation Type', bbox_to_anchor=(1.05, 1), loc='upper left')
-            plt.tight_layout()
-            plt.savefig("data/08_reporting/data_unit_test_by_column.png")
-            logger.info("Saved column-wise results to data/08_reporting/data_unit_test_by_column.png")
+        # Use Test Description for column-wise results too
+        columns_with_values = df_validation.dropna(subset=['Column'])
+        if not columns_with_values.empty:
+            column_results = columns_with_values.groupby(['Column', 'Test Description'])['Success'].mean().unstack()
+            
+            if not column_results.empty:
+                column_results.plot(kind='bar', stacked=False)
+                plt.title('Test Success by Column and Type', fontsize=14)
+                plt.xlabel('Column')
+                plt.ylabel('Success Rate')
+                plt.legend(title='Test Type', bbox_to_anchor=(1.05, 1), loc='upper left')
+                plt.tight_layout()
+                plt.savefig("data/08_reporting/data_unit_test_by_column.png")
+                logger.info("Saved column-wise results to data/08_reporting/data_unit_test_by_column.png")
     
     # Log summary statistics
     logger.info(f"Test Summary: {df_validation['Success'].sum()} passed, "
