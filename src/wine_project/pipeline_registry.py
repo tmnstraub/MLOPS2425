@@ -22,6 +22,7 @@ from kedro.pipeline import Pipeline, pipeline
 from wine_project.pipelines import (
     ingestion as data_ingestion,
     data_unit_tests as data_tests,
+    reporting,
     train_batch_split, 
     # data_preprocessing,  # Remove this import since it doesn't exist
     train_val_split,
@@ -45,6 +46,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     feature_engineering_train_pipeline = feature_engineering_train.create_pipeline()
     feature_engineering_batch_pipeline = feature_engineering_batch.create_pipeline()
     data_unit_tests_pipeline = data_tests.create_pipeline()
+    reporting_pipeline = reporting.create_pipeline()
     train_batch_split_pipeline = train_batch_split.create_pipeline()
     preprocess_train_pipeline = preprocess_train.create_pipeline()
     preprocess_batch_pipeline = preprocess_batch.create_pipeline()
@@ -81,6 +83,8 @@ def register_pipelines() -> Dict[str, Pipeline]:
     return {
         "ingestion": ingestion_pipeline,
         "data_unit_tests": data_unit_tests_pipeline,
+        "reporting": reporting_pipeline,
+        "data_quality": data_tests.create_pipeline() + reporting_pipeline,
         "train_batch_split": train_batch_split_pipeline,
         "preprocess_train": preprocess_train_pipeline,
         "preprocess_batch": preprocess_batch_pipeline,
