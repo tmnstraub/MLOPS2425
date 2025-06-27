@@ -24,14 +24,13 @@ from wine_project.pipelines import (
     data_unit_tests as data_tests,
     reporting,
     train_batch_split, 
-    # data_preprocessing,  # Remove this import since it doesn't exist
     train_val_split,
     preprocess_train,
     preprocess_batch,
     feature_engineering_train,
     feature_engineering_batch,
     model_selection,
-    # model_train,
+    model_train,
     feature_selection,
     model_predict
 )
@@ -85,7 +84,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "data_unit_tests": data_unit_tests_pipeline,
         "reporting": reporting_pipeline,
         "data_quality": data_tests.create_pipeline() + reporting_pipeline,
-        "train_batch_split": train_batch_split_pipeline,
+        "train_batch_split": train_batch_split_pipeline, 
         "preprocess_train": preprocess_train_pipeline,
         "preprocess_batch": preprocess_batch_pipeline,
         "feature_engineering_train": feature_engineering_train_pipeline,

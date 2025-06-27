@@ -5,6 +5,8 @@ This pipeline handles preprocessing for the batch dataset (treated as unseen dat
 import pandas as pd 
 from great_expectations.core import ExpectationSuite, ExpectationConfiguration
 import typing as t
+import re
+import string
 
 def remove_index_column(data):
     """
@@ -71,6 +73,36 @@ def drop_zero_prices(df: pd.DataFrame) -> pd.DataFrame:
     
     return df
 
+def normalize_text_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Normalize text features by converting to lowercase, removing punctuation, and whitespace.
+    Especially useful for categorical text columns like wine varieties.
+    
+    Args:
+        df: Pandas DataFrame with text columns
+        
+    Returns:
+        DataFrame with normalized text features
+    """
+    # Make a copy to avoid modifying the input
+    df = df.copy()
+    
+    # List of text columns to normalize
+    text_columns = ['variety']  # Add other text columns as needed
+    
+    for col in text_columns:
+        if col in df.columns:
+            # Convert to lowercase
+            df[col] = df[col].astype(str).str.lower()
+            
+            # Remove punctuation
+            df[col] = df[col].apply(lambda x: x.translate(str.maketrans("", "", string.punctuation)))
+            
+            # Remove whitespace
+            df[col] = df[col].apply(lambda x: re.sub(r'\s+', '', x))
+    
+    return df
+
 def preprocess_batch_data(df: pd.DataFrame) -> pd.DataFrame:
     """
     Main preprocessing function for the batch data. Uses the same preprocessing 
@@ -94,5 +126,8 @@ def preprocess_batch_data(df: pd.DataFrame) -> pd.DataFrame:
     #Apply the unknown value replacement
     processed_df = na_col_to_unknown(processed_df)
     
-    return processed_df
+    # Apply text normalization
+    processed_df = normalize_text_features(processed_df)
     
+    return processed_df
+
