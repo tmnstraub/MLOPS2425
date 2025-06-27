@@ -32,7 +32,6 @@ class MockHopsworksUdf:
 if not hasattr(hsfs, 'hopsworks_udf'):
     hsfs.hopsworks_udf = MockHopsworksUdf()
 
-
 conf_path = str(Path('') / settings.CONF_SOURCE)
 conf_loader = OmegaConfigLoader(conf_source=conf_path)
 credentials = conf_loader["credentials"]
@@ -297,32 +296,8 @@ def to_feature_store(
         
     except Exception as e:
         logger.error(f"Error inserting data into feature store: {e}")
+
         return None
-
-    # Add feature descriptions.
-    if object_feature_group is not None:
-        for description in group_description:
-            try:
-                if isinstance(description, dict) and "name" in description and "description" in description:
-                    object_feature_group.update_feature_description(
-                        description["name"], description["description"]
-                    )
-            except Exception as e:
-                logger.warning(f"Could not update feature description: {e}")
-
-        # Update statistics.
-        try:
-            object_feature_group.statistics_config = {
-                "enabled": True,
-                "histograms": True,
-                "correlations": True,
-            }
-            object_feature_group.update_statistics_config()
-            object_feature_group.compute_statistics()
-        except Exception as e:
-            logger.warning(f"Could not update statistics: {e}")
-
-    return object_feature_group
 
 
 def ingestion(
@@ -384,6 +359,21 @@ def ingestion(
     df_clean = df_clean.dropna(how='all')
 
     logger.info(f"The dataset contains {len(df_clean.columns)} columns.")
+
+    # Add filter for price greater than 0
+    if parameters["target_column"] == "price":
+        # Log before filtering
+        initial_count = len(df_clean)
+        logger.info(f"Initial dataset size before price filtering: {initial_count}")
+        
+        # Filter to keep only records with price > 0
+        df_clean = df_clean[df_clean["price"] > 0]
+        
+        # Log after filtering
+        filtered_count = len(df_clean)
+        removed_count = initial_count - filtered_count
+        logger.info(f"Removed {removed_count} records with price <= 0")
+        logger.info(f"Dataset size after price filtering: {filtered_count}")
 
     # Check for unnamed columns and rename them
     unnamed_cols = [col for col in df_clean.columns if 'unnamed' in col.lower() or 'Unnamed' in col]

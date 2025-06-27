@@ -117,11 +117,20 @@ y_val_one_hot:
 #     filepath: data/04_feature/encoder.pkl
 
 
-# production_columns:
-#   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
-#   dataset:
-#     type: pickle.PickleDataset
-#     filepath: data/06_models/production_cols.pkl
+production_columns:
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+  dataset:
+    type: pickle.PickleDataset
+    filepath: data/06_models/production_cols.pkl
+
+# Adding this entry will make the reporting_data_unit_test persistent
+reporting_data_unit_test:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/data_unit_test_results.csv
+
+# This is the output of our visualization node
+reporting_data_unit_test_visualized:
+  type: MemoryDataset
 
 champion_model:
   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
@@ -151,11 +160,11 @@ production_model_metrics:
 #   type: pandas.CSVDataset
 #   filepath: data/08_reporting/drift_result.csv
 
-# output_plot:
-#   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
-#   dataset:
-#     type: matplotlib.MatplotlibWriter
-#     filepath: data/08_reporting/shap_plot.png
+output_plot:
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+  dataset:
+    type: matplotlib.MatplotlibWriter
+    filepath: data/08_reporting/shap_plot.png
 
 # feature_names:
 #   type: pickle.PickleDataset
