@@ -123,6 +123,15 @@ production_columns:
     type: pickle.PickleDataset
     filepath: data/06_models/production_cols.pkl
 
+# Adding this entry will make the reporting_data_unit_test persistent
+reporting_data_unit_test:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/data_unit_test_results.csv
+
+# This is the output of our visualization node
+reporting_data_unit_test_visualized:
+  type: MemoryDataset
+
 champion_model:
   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
   dataset:
