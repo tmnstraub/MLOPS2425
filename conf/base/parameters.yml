@@ -5,7 +5,7 @@ test_fraction: 0.3
 random_state: 42
 run_name: "full_project"
 use_feature_selection: False
-feature_selection: "rfe"
+feature_selection: "tree_based"  # Options: "rfe", "tree_based"
 model_name: "wine"
 baseline_model_params:
   # Common parameters that work for both CatBoost and XGBoost

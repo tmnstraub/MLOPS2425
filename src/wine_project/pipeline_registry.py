@@ -31,7 +31,7 @@ from wine_project.pipelines import (
     feature_engineering_batch,
     model_selection,
     # model_train,
-    # feature_selection,
+    feature_selection,
     model_predict
 )
 
@@ -51,7 +51,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     train_val_split_pipeline = train_val_split.create_pipeline()
     # model_train_pipeline = model_train.create_pipeline()
     model_selection_pipeline = model_selection.create_pipeline()
-    # feature_selection_pipeline = feature_selection.create_pipeline()
+    feature_selection_pipeline = feature_selection.create_pipeline()
     model_predict_pipeline = model_predict.create_pipeline()
     # data_preprocessing_pipeline = data_preprocessing.create_pipeline()  # Remove this line
 
@@ -88,7 +88,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "feature_engineering_batch": feature_engineering_batch_pipeline,
         "train_val_split": train_val_split_pipeline,
         "model_selection": model_selection_pipeline,
-        # "feature_selection": feature_selection_pipeline,
+        "feature_selection": feature_selection_pipeline,
         # "model_train": model_train_pipeline,
         "inference": model_predict_pipeline,
         # Add default pipeline that combines all implemented pipelines in sequence
