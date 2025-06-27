@@ -1,4 +1,3 @@
-
 """
 This is a boilerplate pipeline
 generated using Kedro 0.18.8
@@ -10,13 +9,14 @@ from .nodes import  split_random
 
 
 def create_pipeline(**kwargs) -> Pipeline:
-    return pipeline(
+    return Pipeline(
         [
             node(
-                func= split_random,
-                inputs= "ingested_data",
-                outputs=["ref_data","ana_data"],
-                name="split_out_of_sample",
+                func=split_random,
+                inputs="wine_ingested_data", # Update this input name if different in your project
+                outputs=["train_data", "batch_data"],
+                name="split_data_node",
             ),
         ]
     )
+    

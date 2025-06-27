@@ -2,17 +2,41 @@
 target_column: "price"
 to_feature_store: True
 test_fraction: 0.3
-random_state: 2021
+random_state: 42
 run_name: "full_project"
 use_feature_selection: False
-
-feature_selection_params:
-  # No 'method' needed here anymore as both will run
-  correlation_threshold: 0.9 # Used by correlation_feature_selection
-  baseline_model_params: # Used by feature_selection (RFE)
-    n_estimators: 100
-    max_depth: 6
-    max_features: 20
-    random_state: 2021
-
-model_name: "bank"
+feature_selection: "rfe"
+model_name: "wine"
+baseline_model_params:
+  # Common parameters that work for both CatBoost and XGBoost
+  n_estimators: 100
+  learning_rate: 0.1
+  max_depth: 6
+  random_state: 42
+  # Model-specific parameters will be handled in model initialization
+drop_col_options:
+  - designation
+  - province
+  - region_1
+  - region_2
+  - taster_name
+  - taster_twitter_handle
+  - title
+  - winery
+# columns_to_fill:
+#   - country
+#   - region_1
+#   - taster_name
+#   - province
+# na_values_col_drop:
+#   - variety
+na_columns_to_unknown:
+  - "country"
+  - "province"
+  - "region_1"
+  - "region_2"
+  - "variety"
+split_data_and_validate:
+  target_column: "price"
+  test_fraction: 0.2
+  random_state: 42

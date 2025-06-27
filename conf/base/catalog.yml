@@ -123,23 +123,29 @@ y_val_one_hot:
 #     type: pickle.PickleDataset
 #     filepath: data/06_models/production_cols.pkl
 
-# best_columns:
-#   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
-#   dataset:
-#     type: pickle.PickleDataset
-#     filepath: data/06_models/best_cols.pkl
+champion_model:
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+  dataset:
+    type: pickle.PickleDataset
+    filepath: data/06_models/champion_model.pkl
 
-# production_model:
-#   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
-#   dataset:
-#     type: pickle.PickleDataset
-#     filepath: data/06_models/production_model.pkl
+best_columns:
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+  dataset:
+    type: pickle.PickleDataset
+    filepath: data/06_models/champion_model.pkl
 
-# production_model_metrics:
-#   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
-#   dataset:
-#     type: json.JSONDataset
-#     filepath: data/08_reporting/production_model_metrics.json
+production_model:
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+  dataset:
+    type: pickle.PickleDataset
+    filepath: data/06_models/production_model.pkl
+
+production_model_metrics:
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
+  dataset:
+    type: json.JSONDataset
+    filepath: data/08_reporting/production_model_metrics.json
 
 # drift_result:
 #   type: pandas.CSVDataset
@@ -162,13 +168,3 @@ y_val_one_hot:
 # feature_names:
 #   type: pickle.PickleDataset
 #   filepath: data/05_model_input/feature_names.pkl
-
-champion_model:
-  type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
-  dataset:
-    type: pickle.PickleDataset
-    filepath: data/06_models/champion_model.pkl
-
-X_cols:
-  type: pickle.PickleDataset
-  filepath: data/04_feature/X_cols.pkl
