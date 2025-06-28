@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from src.wine_project.pipelines.split_train_pipeline.nodes import split_data
+from src.wine_project.pipelines.train_val_split.nodes import split_data
 
 def test_split_data():
     """Test the split_data function.

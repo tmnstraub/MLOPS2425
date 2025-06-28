@@ -23,15 +23,20 @@ def model_predict(X: pd.DataFrame,
         scores (pd.DataFrame): Dataframe with new predictions.
     """
 
-    # Predict
+    logger.info('Starting model prediction...')
     
+    # Predict
     y_pred = model.predict(X[columns])
+
+    logger.info('Model prediction completed.')
 
     # Create dataframe with predictions
     X['y_pred'] = y_pred
     
     # Create dictionary with predictions
-    describe_servings = X.describe().to_dict()
+    describe_servings = X.describe()
+
+    
 
     logger.info('Service predictions created.')
     logger.info('#servings: %s', len(y_pred))

@@ -1,4 +1,3 @@
-
 # streamlit libray
 import streamlit as st
 import streamlit.components.v1 as components
@@ -7,7 +6,7 @@ import sys
 from PIL import Image
 import pandas as pd
 from kedro.io import DataCatalog
-from streamlit_ydata_profiling import st_profile_report
+from ydata_profiling import ProfileReport
 import time
 import pandas as pd
 import requests
@@ -73,7 +72,8 @@ import pandas as pd
 from kedro.config import OmegaConfigLoader
 from kedro.framework.project import settings
 
-conf_path = str(Path('..') / settings.CONF_SOURCE)
+# Fix config path to point to project root conf directory
+conf_path = str(Path(__file__).resolve().parent.parent.parent / settings.CONF_SOURCE)
 conf_loader = OmegaConfigLoader(conf_source=conf_path)
 param = conf_loader["parameters"]
 
@@ -128,6 +128,8 @@ if choice != '':
         env["PYTHONIOENCODING"] = "utf-8"
         env["PYTHONUTF8"] = "1"
 
+        # Set project root as working directory for Kedro
+        project_root = str(Path(__file__).resolve().parent.parent.parent)
         #st.header("Left: Std Out*********************Right: Std Err")
         st.header("Terminal display")
         stdout, stderr = st.columns(2)
@@ -141,7 +143,7 @@ if choice != '':
                 "run",
                 f"--pipeline={choice}"
                 ]
-                good_process = subprocess.run(cmd, cwd="../",encoding="utf-8", capture_output=True, text=True)
+                good_process = subprocess.run(cmd, cwd=project_root, encoding="utf-8", capture_output=True, text=True)
                 stdout_f.write(good_process.stdout)
                 stderr_f.write(good_process.stderr)
             except Exception as e:

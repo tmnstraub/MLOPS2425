@@ -1,1 +1,1 @@
-{"ref_data": {"rows": 36169, "columns": 19, "file_size": 3285732}, "ana_data": {"rows": 9042, "columns": 19, "file_size": 821737}, "drift_result": {"rows": 181, "columns": 11, "file_size": 12532}}
+{"X_train": {"rows": 54096, "columns": 13, "file_size": 6559846}, "X_val": {"rows": 13525, "columns": 13, "file_size": 1640815}, "y_train": {"rows": 54096, "columns": 1, "file_size": 271180}, "y_val": {"rows": 13525, "columns": 1, "file_size": 67873}}
