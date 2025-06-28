@@ -1,7 +1,5 @@
-synthetic_data_drift:
-  n_samples: 1000
-  random_state: 42
-  points_column: 'points'
-  drift:
-    loc: -10
-    scale: 3
+n_samples: 1000
+points_column: 'points'
+drift_loc: -10
+drift_scale: 3
+clip_values: [80, 100]
