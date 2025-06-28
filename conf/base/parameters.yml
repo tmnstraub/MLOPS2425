@@ -40,3 +40,12 @@ split_data_and_validate:
   target_column: "price"
   test_fraction: 0.2
   random_state: 42
+# Features to drop from the feature-engineered dataset
+features_to_drop:
+  - "country_standardized"  # Replace with actual feature names
+  - "province"
+  - "continent"
+  - "wine_type_main"
+  - "is_blend"
+  - "variety"
+# Note: Leave the list empty to keep all features
