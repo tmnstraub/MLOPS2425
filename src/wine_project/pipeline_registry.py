@@ -80,7 +80,8 @@ def register_pipelines() -> Dict[str, Pipeline]:
         model_selection_pipeline +
         feature_selection_pipeline +
         model_train_pipeline +
-        model_predict_pipeline
+        model_predict_pipeline +
+        full_data_drift_pipeline
     )
     
     # Create smaller logical pipeline groups for easier execution

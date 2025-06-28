@@ -14,9 +14,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # install project requirements
-COPY docker_requirements.txt /tmp/docker_requirements.txt
+COPY requirements.txt /tmp/requirements.txt
 RUN python -m pip install -U "pip>=21.2,<23.2"
-RUN pip install --no-cache-dir -r /tmp/docker_requirements.txt && rm -f /tmp/docker_requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt && rm -f /tmp/requirements.txt
 
 # add kedro user
 ARG KEDRO_UID=999
