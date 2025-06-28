@@ -23,16 +23,30 @@ def detect_univariate_drift(
     reference_df: pd.DataFrame, 
     analysis_df: pd.DataFrame, 
     params: Dict
-):  # CHANGED: Output signature
+):
     """
     Calculates univariate drift and returns both the results as a 
     DataFrame and the complete NannyML Result object for plotting.
+    
+    This version corrects the timestamping to ensure the analysis
+    period follows the reference period sequentially.
     """
     ts_col = params['timestamp_column']
+    
+    # 1. Create timestamped reference data (timestamps from 0 to N-1)
     reference_df_nml = _add_timestamp_from_index(reference_df, ts_col)
-    analysis_df_nml = _add_timestamp_from_index(analysis_df, ts_col)
 
-    print("Detecting univariate drift...")
+    # 2. Create timestamped analysis data (also starts from 0)
+    analysis_df_nml = _add_timestamp_from_index(analysis_df, ts_col)
+    
+    # 3. **THE FIX**: Shift analysis timestamps to be sequential
+    # Find the last timestamp in the reference data.
+    last_reference_timestamp = reference_df_nml[ts_col].max()
+    
+    # Add this offset to the analysis timestamps.
+    analysis_df_nml[ts_col] = analysis_df_nml[ts_col] + last_reference_timestamp + 1
+    
+    print("Detecting univariate drift with sequential timestamps...")
     calc = nml.UnivariateDriftCalculator(
         column_names=params['features_to_monitor'],
         timestamp_column_name=ts_col,
@@ -42,13 +56,8 @@ def detect_univariate_drift(
     
     results = calc.calculate(data=analysis_df_nml)
     
-    # CHANGED: Return both the DataFrame and the full result object
+    # Return both the DataFrame and the full result object
     return results.to_df(), results
-    
-    # CHANGED: Return both the DataFrame and the full result object
-    return results.to_df(), results
-
-# NEW NODE: Generates and returns a plot as a savable image object
 def generate_drift_plot_image(univariate_drift_results) -> Image.Image:
     """
     Takes NannyML result object, generates a drift plot, and returns it
