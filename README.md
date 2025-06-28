@@ -1,10 +1,46 @@
-# wine_project
+## Predicting Wine Price MlOps Pipeline
 
-## Overview
+This project implements a modular MLOps pipeline for preparing, processing, and modeling a wine dataset using Kedro. The pipeline is designed to replicate real-world production workflows, with each pipeline covering a specific stage of the machine learning lifecycle:
 
-This is your new Kedro project, which was generated using `kedro 0.19.5`.
+* **Ingestion Pipeline** (`ingestion_pipeline`):
+  Loads the raw dataset into the project environment, preparing it for downstream processing.
+* **Data Quality Pipeline** (`data_quality_pipeline`):
+  Runs data unit tests on the ingested data, checking schema consistency, types, duplicates, and expected distributions. Outputs reports and visualizations to assess data quality before further processing.
+* **Preprocessing Pipeline** (`preprocessing_pipeline`):
+  Applies data cleaning and preprocessing steps separately to both **batch** and **train** datasets, including:
+  * Missing value handling.
+  * Normalization.
+  * General transformations.
+* **Feature Engineering Pipeline** (`feature_engineering_pipeline`):
+  Runs on both ****batch** and** **train** datasets. Key tasks include:
+  * Creating new features.
+  * Storing engineered datasets for reproducibility.
+  * Dynamically dropping columns with high correlation, guided by insights from the Streamlit data catalog (Cramér’s V categorical correlation heatmaps).
+  * Managing columns to drop via  `features_to_drop` in `parameters.yml`.
+  * Applying one-hot encoding where required.
+* **Train/Validation Split Pipeline** (`train_validation_split_pipeline`):
+  Splits the train dataset (both one-hot encoded and non-encoded versions) into training and validation subsets, enabling robust model selection and evaluation.
+* **Model Selection Pipeline** (`model_selection_pipeline`):
+  Searches and compares candidate models, evaluating them on the train/validation data with defined metrics.
+* **Feature Selection Pipeline** (`feature_selection_pipeline`):
+  Uses the best-performing model to select optimal features through methods like tree-based importance or Recursive Feature Elimination (RFE).
+* **Model Train Pipeline** (`model_train_pipeline`):
+  Trains the final model with the best features selected, using the chosen model and hyperparameters.
+* **Model Predict Pipeline** (`model_predict_pipeline`):
+  Applies the trained model to the **batch** dataset, generating predictions on new or unseen data.
 
-Take a look at the [Kedro documentation](https://docs.kedro.org) to get started.
+---
+
+### Design highlights
+
+* **Parallel data preparation for different model types** :
+  Supports both one-hot and non-one-hot paths, enabling flexible experiments with models like CatBoost (native categorical support) or others requiring numeric inputs.
+* **Dynamic feature selection** :
+  Columns to drop are configured in `parameters.yml` and can be adjusted without code changes.
+* **Reproducibility and transparency** :
+  Engineered datasets and feature selections are stored, while data quality is visualized and reported.
+* **Streamlit integration** :
+  Correlation heatmaps and dataset exploration are available in a Streamlit data catalog interface.
 
 ## Rules and guidelines
 
@@ -14,6 +50,8 @@ In order to get the best out of the template:
 * Make sure your results can be reproduced by following a data engineering convention
 * Don't commit data to your repository
 * Don't commit any credentials or your local configuration to your repository. Keep all your credentials and local configuration in `conf/local/`
+
+---
 
 ## How to install dependencies
 
@@ -35,11 +73,16 @@ pip install -r requirements.txt
 - For feature store functionality, specific package versions (hsfs, hopsworks, etc.) are required and included
 
 The feature store integration requires specific versions of these packages:
+
 - `hsfs==3.7.9`
 - `hopsworks==4.2.6`
 - `hopsworks-aiomysql==0.2.1`
 
 If you encounter issues with the feature store upload, ensure these versions are installed correctly.
+
+---
+
+
 
 ## How to run your Kedro pipeline
 
@@ -59,7 +102,6 @@ pytest
 
 You can configure the coverage threshold in your project's `pyproject.toml` file under the `[tool.coverage.report]` section.
 
-
 ## Project dependencies
 
 To see and update the dependency requirements for your project use `requirements.txt`. You can install the project requirements with `pip install -r requirements.txt`.
@@ -73,6 +115,7 @@ To see and update the dependency requirements for your project use `requirements
 > Jupyter, JupyterLab, and IPython are already included in the project requirements by default, so once you have run `pip install -r requirements.txt` you will not need to take any extra steps before you use them.
 
 ### Jupyter
+
 To use Jupyter notebooks in your Kedro project, you need to install Jupyter:
 
 ```
@@ -86,6 +129,7 @@ kedro jupyter notebook
 ```
 
 ### JupyterLab
+
 To use JupyterLab, you need to install it:
 
 ```
@@ -99,6 +143,7 @@ kedro jupyter lab
 ```
 
 ### IPython
+
 And if you want to run an IPython session:
 
 ```
@@ -106,6 +151,7 @@ kedro ipython
 ```
 
 ### How to ignore notebook output cells in `git`
+
 To automatically strip out all output cell contents before committing to `git`, you can use tools like [`nbstripout`](https://github.com/kynan/nbstripout). For example, you can add a hook in `.git/config` with `nbstripout --install`. This will run `nbstripout` before anything is committed to `git`.
 
 > *Note:* Your output cells will be retained locally.
