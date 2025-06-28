@@ -56,10 +56,9 @@ def register_pipelines() -> Dict[str, Pipeline]:
     preprocess_train_pipeline = preprocess_train.create_pipeline()
     preprocess_batch_pipeline = preprocess_batch.create_pipeline()
     train_val_split_pipeline = train_val_split.create_pipeline()
-    # Comment out model_train_pipeline
-    model_train_pipeline = model_train.create_pipeline()
     model_selection_pipeline = model_selection.create_pipeline()
     feature_selection_pipeline = feature_selection.create_pipeline()
+    model_train_pipeline = model_train.create_pipeline()
     model_predict_pipeline = model_predict.create_pipeline()
     data_drift_pipeline = data_drift.create_pipeline()
     synthetic_data_drift_pipeline = synthetic_data_drift.create_pipeline()
@@ -78,6 +77,9 @@ def register_pipelines() -> Dict[str, Pipeline]:
         feature_engineering_train_pipeline +
         feature_engineering_batch_pipeline +
         train_val_split_pipeline + 
+        model_selection_pipeline +
+        feature_selection_pipeline +
+        model_train_pipeline +
         model_predict_pipeline
     )
     
