@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 def load_and_sample_data(
     wine_raw_data: pd.DataFrame, 
-    n_samples: int = 1000, 
+    n_samples: int = 30000, 
     random_state: int = 42
 ) -> pd.DataFrame:
     """
