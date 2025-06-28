@@ -186,3 +186,16 @@ predict_describe:
 # feature_names:
 #   type: pickle.PickleDataset
 #   filepath: data/05_model_input/feature_names.pkl
+
+# Dataset for storing all features before filtering
+train_all_features:
+  type: pandas.CSVDataset
+  filepath: data/03_primary/train_all_features.csv
+  save_args:
+    index: False
+
+batch_all_features:
+  type: pandas.CSVDataset
+  filepath: data/03_primary/batch_all_features.csv
+  save_args:
+    index: False
