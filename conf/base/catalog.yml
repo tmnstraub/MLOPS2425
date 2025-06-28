@@ -32,6 +32,8 @@ wine_preprocessed:
   type: pandas.CSVDataset
   filepath: data/03_primary/wine_preprocessed.csv
 
+  
+
 # reporting_data_train:
 #   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
 #   dataset:
@@ -84,9 +86,19 @@ X_test_engineered:
 #   filepath: data/08_reporting/univariate_drift_plot.html
 #   plotly_args: {}  
 
+# Results from drift calculation (DataFrame part)
+univariate_drift_df:
+  type: kedro_datasets.pandas.ParquetDataset
+  filepath: data/08_reporting/univariate_drift.parquet
+
+# NannyML result object for plotting (in-memory)
 univariate_drift_results:
-  type: pandas.CSVDataset  # Change from pickle.PickleDataSet to pandas.CSVDataSet
-  filepath: data/08_reporting/univariate_drift_results.csv # Use .csv extension
+  type: kedro.io.MemoryDataset
+
+# The final PNG plot output
+univariate_drift_plot:
+  type: kedro_datasets.pillow.ImageDataset
+  filepath: data/08_reporting/univariate_drift_plot.png
 
 # production_columns:
 #   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
