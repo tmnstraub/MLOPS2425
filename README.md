@@ -28,6 +28,8 @@ This project implements a modular MLOps pipeline for preparing, processing, and 
   Trains the final model with the best features selected, using the chosen model and hyperparameters.
 * **Model Predict Pipeline** (`model_predict_pipeline`):
   Applies the trained model to the **batch** dataset, generating predictions on new or unseen data.
+* **Full Data Drift Pipeline** (`full_data_drift`):
+  Creates a synthetic dataset where we induce data drift on the ‘points’ column. Uses the Kolmogorov-Smirnov and Jensen-Shannon tests on the provided numeric columns.
 
 ---
 
@@ -81,8 +83,6 @@ The feature store integration requires specific versions of these packages:
 If you encounter issues with the feature store upload, ensure these versions are installed correctly.
 
 ---
-
-
 
 ## How to run your Kedro pipeline
 
@@ -160,8 +160,11 @@ To automatically strip out all output cell contents before committing to `git`, 
 
 [Further information about building project documentation and packaging your project](https://docs.kedro.org/en/stable/tutorial/package_a_project.html)
 
-
 ## Docker
+
+We already created a Docker File, with the following link you will have access:
+
+[Wine Project Tar File Download](https://liveeduisegiunl-my.sharepoint.com/:u:/g/personal/20240503_novaims_unl_pt/EU7oelLLF89CiDdTGYN3DWoBUsHMHHgyk0txNoOZhMaefQ?e=4Ps5q0)
 
 To create a docker file based on the main run:
 
@@ -169,7 +172,7 @@ To create a docker file based on the main run:
 docker build -t wine-project:2.1 .
 ```
 
-To load the .tar file of the created docker image run: 
+To load the .tar file of the created docker image run:
 
 ```
 docker load -i wine-project_2.1.tar
