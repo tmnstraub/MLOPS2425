@@ -44,30 +44,6 @@ def detect_univariate_drift(
     
     # CHANGED: Return both the DataFrame and the full result object
     return results.to_df(), results
-
-def estimate_regression_performance(
-    reference_df: pd.DataFrame, 
-    analysis_df: pd.DataFrame, 
-    params: Dict
-): # CHANGED: Output signature
-    """
-    Estimates regression performance and returns both the results as a
-    DataFrame and the complete NannyML Result object for plotting.
-    """
-    ts_col = params['timestamp_column']
-    reference_df_nml = _add_timestamp_from_index(reference_df, ts_col)
-    analysis_df_nml = _add_timestamp_from_index(analysis_df, ts_col)
-    
-    print("Estimating regression performance...")
-    perf_calc = nml.RegressionPerformanceCalculator(
-        y_true=params['target_column'],
-        y_pred=params['prediction_column'],
-        timestamp_column_name=ts_col,
-        metrics=['rmse', 'mae'],
-        chunk_size=params['chunk_size']
-    ).fit(reference_df_nml)
-    
-    results = perf_calc.calculate(data=analysis_df_nml)
     
     # CHANGED: Return both the DataFrame and the full result object
     return results.to_df(), results
