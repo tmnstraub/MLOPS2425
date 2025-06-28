@@ -30,8 +30,9 @@ from wine_project.pipelines import (
     feature_engineering_train,
     feature_engineering_batch,
     model_selection,
-    # model_train,
+    model_train,
     feature_selection,
+    model_train,
     model_predict
 )
 
@@ -51,7 +52,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     preprocess_batch_pipeline = preprocess_batch.create_pipeline()
     train_val_split_pipeline = train_val_split.create_pipeline()
     # Comment out model_train_pipeline
-    # model_train_pipeline = model_train.create_pipeline()
+    model_train_pipeline = model_train.create_pipeline()
     model_selection_pipeline = model_selection.create_pipeline()
     feature_selection_pipeline = feature_selection.create_pipeline()
     model_predict_pipeline = model_predict.create_pipeline()
@@ -84,7 +85,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "data_unit_tests": data_unit_tests_pipeline,
         "reporting": reporting_pipeline,
         "data_quality": data_tests.create_pipeline() + reporting_pipeline,
-        "train_batch_split": train_batch_split_pipeline,
+        "train_batch_split": train_batch_split_pipeline, 
         "preprocess_train": preprocess_train_pipeline,
         "preprocess_batch": preprocess_batch_pipeline,
         "feature_engineering_train": feature_engineering_train_pipeline,
@@ -93,10 +94,10 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "model_selection": model_selection_pipeline,
         "feature_selection": feature_selection_pipeline,
         # Comment out model_train reference
-        # "model_train": model_train_pipeline,
+        "model_train": model_train_pipeline,
         "inference": model_predict_pipeline,
         # Add default pipeline that combines all implemented pipelines in sequence
-        "__default__": combined_pipeline,
+        "default": combined_pipeline,
         # Add logical pipeline groups
         "data_preparation": data_preparation_pipeline,
         "train_batch": train_batch_pipeline,

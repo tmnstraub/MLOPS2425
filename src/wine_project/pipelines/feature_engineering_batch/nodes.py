@@ -91,16 +91,23 @@ def select_batch_features(df: pd.DataFrame, features_to_drop: list = None) -> pd
 
 def create_one_hot_encoded_features(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Create one-hot encoded features from categorical columns using scikit-learn's OneHotEncoder.
+    Create one-hot encoded features from categorical columns.
     
     Args:
-        df: DataFrame with categorical columns
+        df: DataFrame with feature engineered data
         
     Returns:
         DataFrame with one-hot encoded features
     """
-    # Create a copy of the dataframe to avoid modifying the original
+    # Make a copy of the data
     df_encoded = df.copy()
+    
+    # Check if 'is_blend' column exists before trying to encode it
+    if 'is_blend' in df_encoded.columns:
+        df_encoded['is_blend_True'] = df_encoded['is_blend'].fillna(False).astype(int)
+    else:
+        # Create the column with default value if it doesn't exist
+        df_encoded['is_blend_True'] = 0
     
     # List of categorical columns to one-hot encode
     categorical_columns = df.select_dtypes(include=['object', 'string', 'category']).columns.tolist()

@@ -1,5 +1,5 @@
 {
   "regressor": "CatBoostRegressor",
-  "train_score": 32.6144342241257,
-  "val_score": 35.20664828843352
+  "train_score": 32.79609410028263,
+  "val_score": 35.0595212988456
 }
