@@ -30,13 +30,20 @@ catalog = conf_loader["catalog"]
 available_datasets = [
     'wine_raw_data',
     'wine_ingested_data',
-    'wine_preprocessed',
+    'batch_preprocessed',
+    'train_preprocessed',
+    'batch_feature_engineered',
+    'train_feature_engineered',
+    'batch_feature_engineered_one_hot',
+    'train_feature_engineered_one_hot',
     'X_train',
-    'X_test',
-    'y_train', 
-    'y_test',
-    'X_train_engineered',
-    'X_test_engineered'
+    'X_val',
+    'y_train',
+    'y_val',
+    'X_train_one_hot',
+    'X_val_one_hot',
+    'y_train_one_hot',
+    'y_val_one_hot'
 ]
 
 # Filter to only include datasets actually in the catalog

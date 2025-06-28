@@ -1,1 +1,1 @@
-{"wine_raw_data": {"rows": 129971, "columns": 13, "file_size": 52908706}, "wine_data_drift_test": {"rows": 1000, "columns": 13, "file_size": 421514}, "univariate_drift_results": {"rows": 1310, "columns": 11, "file_size": 190892}}
+{"X_train": {"rows": 54096, "columns": 13, "file_size": 6559846}, "X_val": {"rows": 13525, "columns": 13, "file_size": 1640815}, "y_train": {"rows": 54096, "columns": 1, "file_size": 271180}, "y_val": {"rows": 13525, "columns": 1, "file_size": 67873}}
