@@ -1,5 +1,8 @@
 ## Predicting Wine Price MlOps Pipeline
 
+To have access to the dataset:
+[130k_wine_dataset](https://www.kaggle.com/datasets/zynicide/wine-reviews)
+
 This project implements a modular MLOps pipeline for preparing, processing, and modeling a wine dataset using Kedro. The pipeline is designed to replicate real-world production workflows, with each pipeline covering a specific stage of the machine learning lifecycle:
 
 * **Ingestion Pipeline** (`ingestion_pipeline`):
