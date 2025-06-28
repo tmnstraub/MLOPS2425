@@ -159,3 +159,18 @@ To automatically strip out all output cell contents before committing to `git`, 
 ## Package your Kedro project
 
 [Further information about building project documentation and packaging your project](https://docs.kedro.org/en/stable/tutorial/package_a_project.html)
+
+
+## Docker
+
+To create a docker file based on the main run:
+
+```
+docker build -t wine-project:2.1 .
+```
+
+To load the .tar file of the created docker image run: 
+
+```
+docker load -i wine-project_2.1.tar
+```
