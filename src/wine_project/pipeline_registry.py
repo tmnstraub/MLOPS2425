@@ -51,10 +51,9 @@ def register_pipelines() -> Dict[str, Pipeline]:
     preprocess_train_pipeline = preprocess_train.create_pipeline()
     preprocess_batch_pipeline = preprocess_batch.create_pipeline()
     train_val_split_pipeline = train_val_split.create_pipeline()
-    # Comment out model_train_pipeline
-    model_train_pipeline = model_train.create_pipeline()
     model_selection_pipeline = model_selection.create_pipeline()
     feature_selection_pipeline = feature_selection.create_pipeline()
+    model_train_pipeline = model_train.create_pipeline()
     model_predict_pipeline = model_predict.create_pipeline()
 
     # Create a combined pipeline with all nodes that shows the sequential workflow
@@ -68,6 +67,9 @@ def register_pipelines() -> Dict[str, Pipeline]:
         feature_engineering_train_pipeline +
         feature_engineering_batch_pipeline +
         train_val_split_pipeline + 
+        model_selection_pipeline +
+        feature_selection_pipeline +
+        model_train_pipeline +
         model_predict_pipeline
     )
     

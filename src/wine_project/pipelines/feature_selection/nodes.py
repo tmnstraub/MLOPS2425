@@ -8,6 +8,7 @@ from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, classification_report
 from xgboost import XGBRegressor
+from catboost import CatBoostRegressor
 from sklearn.feature_selection import RFE
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.feature_selection import SelectFromModel
@@ -15,6 +16,7 @@ import os
 import pickle
 from scipy.stats import chi2_contingency
 import datetime  # Add this import for timestamp
+from catboost import CatBoostRegressor
 
 
 def feature_selection( X_train: pd.DataFrame , y_train: pd.DataFrame,  parameters: Dict[str, Any]):
@@ -57,6 +59,46 @@ def feature_selection( X_train: pd.DataFrame , y_train: pd.DataFrame,  parameter
         indices = np.argsort(importances)[::-1]
         top_features = [(X_train.columns[i], importances[i]) for i in indices[:min(10, len(indices))]]
         log.info(f"Top features by importance: {top_features}")
+
+    if parameters["feature_selection"] == "catboost":
+        try:
+            with open(os.path.join(os.getcwd(), 'data', '06_models', 'champion_model.pkl'), 'rb') as f:
+                regressor = pickle.load(f)
+        except:
+            regressor = CatBoostRegressor(**parameters['baseline_model_params'])
+
+        y_train = np.ravel(y_train)
+        
+        # Identify categorical features
+        categorical_features = X_train.select_dtypes(include=['object', 'category']).columns.tolist()
+        cat_feature_indices = [X_train.columns.get_loc(col) for col in categorical_features]
+        
+        # Fit the model to get feature importances
+        regressor.fit(X_train, y_train)
+        
+        # Get feature importances
+        importances = regressor.get_feature_importance()
+        
+        # Sort features by importance
+        feature_importance = pd.DataFrame({
+            'feature': X_train.columns,
+            'importance': importances
+        }).sort_values('importance', ascending=False)
+        
+        # Select top features based on importance threshold
+        # You can adjust the threshold based on your needs
+        importance_threshold = np.mean(importances)  # Use mean importance as threshold
+        
+        # Select features with importance above threshold
+        selected_features = feature_importance[feature_importance['importance'] > importance_threshold]['feature'].tolist()
+        
+        # Log the selected features and their importance
+        log.info(f"CatBoost feature selection - importance threshold: {importance_threshold:.6f}")
+        log.info(f"Top 10 features by importance:")
+        for i, row in feature_importance.head(10).iterrows():
+            log.info(f"  {row['feature']}: {row['importance']:.6f}")
+        
+        X_cols = selected_features
 
     log.info(f"Number of best columns is: {len(X_cols)}")
     

@@ -3,6 +3,13 @@
   "expectation_suite_name": "Wine",
   "expectations": [
     {
+      "expectation_type": "expect_table_column_count_to_equal",
+      "kwargs": {
+        "value": 8
+      },
+      "meta": {}
+    },
+    {
       "expectation_type": "expect_column_values_to_be_of_type",
       "kwargs": {
         "column": "points",
@@ -51,18 +58,12 @@
       "meta": {}
     },
     {
-      "expectation_type": "expect_table_column_count_to_equal",
-      "kwargs": {
-        "value": 8
-      },
-      "meta": {}
-    },
-    {
       "expectation_type": "expect_column_values_to_be_between",
       "kwargs": {
         "column": "points",
         "max_value": 100,
-        "min_value": 0
+        "min_value": 0,
+        "strict_min": false
       },
       "meta": {}
     },

@@ -1,0 +1,24 @@
+# SERVER CONFIGURATION -------------------
+
+server:
+  mlflow_tracking_uri: "http://127.0.0.1:8080"
+  mlflow_registry_uri: "http://127.0.0.1:8080"
+
+tracking:
+  disable_tracking:
+    pipelines: []
+
+  experiment:
+    name: wine_project
+    restore_if_deleted: True  # if the experiment`name` was previously deleted experiment, should we restore it?
+
+  run:
+    id: null # if `id` is None, a new run will be created
+    name: null # if `name` is None, pipeline name will be used for the run name
+    nested: True  # if `nested` is False, you won't be able to launch sub-runs inside your nodes
+  params:
+    dict_params:
+      flatten: False
+      recursive: True
+      sep: "."
+    long_params_strategy: fail
