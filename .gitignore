@@ -19,7 +19,9 @@ catboost_info/
 #make an exception for 08_reporting/production_model_metrics.csv
 !data/08_reporting/production_model_metrics.json
 !data/06_models/production_model.pkl
+!data/06_models/production_cols.pkl
 !data/06_models/champion_model.pkl
+!data/06_models/best_columns.pkl
 
 
 # also keep all .gitkeep files
