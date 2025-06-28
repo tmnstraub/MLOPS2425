@@ -63,8 +63,23 @@ def feature_selection( X_train: pd.DataFrame , y_train: pd.DataFrame,  parameter
     if parameters["feature_selection"] == "catboost":
         try:
             with open(os.path.join(os.getcwd(), 'data', '06_models', 'champion_model.pkl'), 'rb') as f:
-                regressor = pickle.load(f)
-        except:
+                loaded_obj = pickle.load(f)
+                
+                # Handle case where loaded object is a list or other container
+                if isinstance(loaded_obj, list):
+                    log.warning(f"Loaded model is a list with {len(loaded_obj)} items. Using a new CatBoost model.")
+                    regressor = CatBoostRegressor(**parameters['baseline_model_params'])
+                elif isinstance(loaded_obj, dict):
+                    log.warning("Loaded model is a dictionary. Using a new CatBoost model.")
+                    regressor = CatBoostRegressor(**parameters['baseline_model_params'])
+                elif hasattr(loaded_obj, 'fit') and hasattr(loaded_obj, 'predict'):
+                    regressor = loaded_obj
+                    log.info(f"Loaded model: {type(regressor).__name__}")
+                else:
+                    log.warning(f"Loaded object is not usable as a model. Using a new CatBoost model.")
+                    regressor = CatBoostRegressor(**parameters['baseline_model_params'])
+        except Exception as e:
+            log.warning(f"Error loading champion model: {str(e)}. Creating a new model.")
             regressor = CatBoostRegressor(**parameters['baseline_model_params'])
 
         y_train = np.ravel(y_train)
@@ -73,11 +88,21 @@ def feature_selection( X_train: pd.DataFrame , y_train: pd.DataFrame,  parameter
         categorical_features = X_train.select_dtypes(include=['object', 'category']).columns.tolist()
         cat_feature_indices = [X_train.columns.get_loc(col) for col in categorical_features]
         
+        log.info(f"Identified {len(categorical_features)} categorical features: {categorical_features}")
+        
+        # Create a fresh CatBoost model for feature selection
+        feature_selector = CatBoostRegressor(
+            cat_features=cat_feature_indices,  # This is the key part - properly set categorical features
+            verbose=False,
+            **parameters.get('baseline_model_params', {})
+        )
+        
         # Fit the model to get feature importances
-        regressor.fit(X_train, y_train)
+        log.info("Fitting CatBoost model for feature importance calculation")
+        feature_selector.fit(X_train, y_train)
         
         # Get feature importances
-        importances = regressor.get_feature_importance()
+        importances = feature_selector.get_feature_importance()
         
         # Sort features by importance
         feature_importance = pd.DataFrame({
