@@ -65,19 +65,34 @@ def model_train(X_train: pd.DataFrame,
     # open pickle file with regressors
     try:
         with open(os.path.join(os.getcwd(), 'data', '06_models', 'champion_model.pkl'), 'rb') as f:
-            regressor = pickle.load(f)
+            loaded_obj = pickle.load(f)
             
-            if regressor.__class__.__name__ == 'CatBoostRegressor':
-                logger.info("CatBoostRegressor")
-                # Extract params from the classifier to use for the regressor
-                params = regressor.get_params()
-                # Remove classifier-specific parameters that don't apply to regressors
-                for param in ['loss_function', 'classes_count', 'class_weights']:
-                    if param in params:
-                        del params[param]
-                # Create a new regressor with the same parameters
-                regressor = CatBoostRegressor(**params)
-    except:
+            # Handle case where loaded object is a list or other container
+            if isinstance(loaded_obj, list):
+                logger.warning(f"Loaded model is a list with {len(loaded_obj)} items. Using a new CatBoost model.")
+                regressor = CatBoostRegressor(**parameters['baseline_model_params'])
+            elif isinstance(loaded_obj, dict):
+                logger.warning("Loaded model is a dictionary. Using a new CatBoost model.")
+                regressor = CatBoostRegressor(**parameters['baseline_model_params'])
+            elif hasattr(loaded_obj, 'fit') and hasattr(loaded_obj, 'predict'):
+                regressor = loaded_obj
+                logger.info(f"Loaded model: {type(regressor).__name__}")
+                
+                if regressor.__class__.__name__ == 'CatBoostRegressor':
+                    logger.info("Processing CatBoostRegressor parameters")
+                    # Extract params from the classifier to use for the regressor
+                    params = regressor.get_params()
+                    # Remove classifier-specific parameters that don't apply to regressors
+                    for param in ['loss_function', 'classes_count', 'class_weights']:
+                        if param in params:
+                            del params[param]
+                    # Create a new regressor with the same parameters
+                    regressor = CatBoostRegressor(**params)
+            else:
+                logger.warning(f"Loaded object is not usable as a model. Using a new CatBoost model.")
+                regressor = CatBoostRegressor(**parameters['baseline_model_params'])
+    except Exception as e:
+        logger.warning(f"Error loading champion model: {str(e)}. Creating a new model.")
         regressor = CatBoostRegressor(**parameters['baseline_model_params'])
 
     results_dict = {}
