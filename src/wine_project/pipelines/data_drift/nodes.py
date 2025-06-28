@@ -40,10 +40,17 @@ def detect_univariate_drift(
         chunk_size=params['chunk_size']
     ).fit(reference_data=reference_df_nml)
     
-    results = calc.calculate(data=analysis_df_nml)
+    drift_results = calc.calculate(data=analysis_df_nml)
     
-    # CHANGED: Return both the DataFrame and the full result object
-    return results.to_df(), results
+    print("Estimating regression performance...")
+    perf_results_df, perf_results = estimate_regression_performance(
+        reference_df=reference_df,
+        analysis_df=analysis_df,
+        params=params
+    )
+    
+    # CHANGED: Return all results
+    return drift_results.to_df(), drift_results, perf_results_df, perf_results
 
 def estimate_regression_performance(
     reference_df: pd.DataFrame, 
