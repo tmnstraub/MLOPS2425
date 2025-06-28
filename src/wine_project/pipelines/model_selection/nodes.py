@@ -13,7 +13,7 @@ from xgboost import XGBRegressor
 from sklearn.preprocessing import OneHotEncoder
 
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, root_mean_squared_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from math import sqrt
 
 import mlflow
@@ -89,7 +89,7 @@ def model_selection(X_train: pd.DataFrame,
                 logger.info(f"Trained CatBoost with categorical features: {cat_features_idx}")
                 
             # For XGBoost, use the one-hot encoded data
-            elif model_name == 'XGBRegressor':
+            if model_name == 'XGBRegressor':
                 model.fit(X_train_encoded, y_train_ravel)
                 y_pred = model.predict(X_val_encoded)
                 logger.info(f"Trained XGBoost with one-hot encoded features")
@@ -126,15 +126,9 @@ def model_selection(X_train: pd.DataFrame,
     with mlflow.start_run(experiment_id=experiment_id,nested=True):
         # Choose the right data format for GridSearchCV based on the best model
         if data_format == 'original':
-            # For CatBoost, we need to create a new model instance with the categorical features
-            if best_model_name == 'CatBoostRegressor':
-                base_model = CatBoostRegressor(cat_features=cat_features_idx, verbose=False)
-                X_train_grid = X_train
-                X_val_grid = X_val
-            else:
-                base_model = best_model
-                X_train_grid = X_train
-                X_val_grid = X_val
+            base_model = CatBoostRegressor(cat_features=cat_features_idx, verbose=False)
+            X_train_grid = X_train
+            X_val_grid = X_val
         else:
             # For XGBoost, use the encoded data
             base_model = best_model
@@ -151,8 +145,12 @@ def model_selection(X_train: pd.DataFrame,
         
         # Calculate and log RMSE from the best score (which is negative MSE)
         best_rmse = sqrt(-gridsearch.best_score_)
-        mlflow.log_metric(mlflow.metrics.rmse())
-        mlflow.log_metric(mlflow.metrics.r2_score())
+        mlflow.log_metric("rmse", best_rmse)
+        
+        # Calculate and log R2 score
+        y_pred = best_model.predict(X_val_grid)
+        r2 = r2_score(y_val, y_pred)
+        mlflow.log_metric("r2", r2)
 
 
     logger.info(f"Hypertuned model best score: {best_rmse} (RMSE)")
