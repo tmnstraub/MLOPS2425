@@ -1,0 +1,5 @@
+n_samples: 30000
+points_column: 'points'
+drift_loc: -10
+drift_scale: 3
+clip_values: [80, 100]

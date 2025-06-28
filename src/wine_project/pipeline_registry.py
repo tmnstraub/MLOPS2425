@@ -22,6 +22,11 @@ from kedro.pipeline import Pipeline, pipeline
 from wine_project.pipelines import (
     ingestion as data_ingestion,
     data_unit_tests as data_tests,
+    # model_selection,
+    # model_train,
+    # feature_selection,
+    data_drift,
+    synthetic_data_drift,
     reporting,
     train_batch_split, 
     train_val_split,
@@ -51,11 +56,15 @@ def register_pipelines() -> Dict[str, Pipeline]:
     preprocess_train_pipeline = preprocess_train.create_pipeline()
     preprocess_batch_pipeline = preprocess_batch.create_pipeline()
     train_val_split_pipeline = train_val_split.create_pipeline()
-    # Comment out model_train_pipeline
-    model_train_pipeline = model_train.create_pipeline()
     model_selection_pipeline = model_selection.create_pipeline()
     feature_selection_pipeline = feature_selection.create_pipeline()
+    model_train_pipeline = model_train.create_pipeline()
     model_predict_pipeline = model_predict.create_pipeline()
+    data_drift_pipeline = data_drift.create_pipeline()
+    synthetic_data_drift_pipeline = synthetic_data_drift.create_pipeline()
+    # Create a combined pipeline with all nodes that shows the sequential workflow
+    # This allows visualizing the entire ML workflow in Kedro-Viz
+    full_data_drift_pipeline = synthetic_data_drift_pipeline + data_drift_pipeline
 
     # Create a combined pipeline with all nodes that shows the sequential workflow
     # This allows visualizing the entire ML workflow in Kedro-Viz
@@ -68,6 +77,9 @@ def register_pipelines() -> Dict[str, Pipeline]:
         feature_engineering_train_pipeline +
         feature_engineering_batch_pipeline +
         train_val_split_pipeline + 
+        model_selection_pipeline +
+        feature_selection_pipeline +
+        model_train_pipeline +
         model_predict_pipeline
     )
     
@@ -83,6 +95,13 @@ def register_pipelines() -> Dict[str, Pipeline]:
     return {
         "ingestion": ingestion_pipeline,
         "data_unit_tests": data_unit_tests_pipeline,
+        'data_drift': data_drift_pipeline,
+        'synthetic_data_drift': synthetic_data_drift_pipeline,
+        # "feature_selection": feature_selection_pipeline,
+        # "model_selection": model_selection_pipeline,
+        # "model_train": model_train_pipeline,
+        "full_data_drift": full_data_drift_pipeline, 
+        # Add default pipeline that combines all implemented pipelines in sequence
         "reporting": reporting_pipeline,
         "data_quality": data_tests.create_pipeline() + reporting_pipeline,
         "train_batch_split": train_batch_split_pipeline, 

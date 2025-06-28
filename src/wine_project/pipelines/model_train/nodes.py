@@ -49,7 +49,6 @@ def model_train(X_train: pd.DataFrame,
         with open(os.path.join(os.getcwd(), 'data', '06_models', 'champion_model.pkl'), 'rb') as f:
             regressor = pickle.load(f)
             
-            # If we loaded a classifier instead of a regressor, convert it to a regressor
             if regressor.__class__.__name__ == 'CatBoostRegressor':
                 logger.info("CatBoostRegressor")
                 # Extract params from the classifier to use for the regressor
