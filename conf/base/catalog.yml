@@ -8,7 +8,12 @@ wine_raw_data:
   filepath: data/01_raw/winemag-data-130k-v2.csv
   load_args:
     index_col: 0
-  #   sep: ';'
+
+wine_data_drift_test:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/winemag_data_drift.csv
+  save_args:
+    index: false
 
 wine_ingested_data:
   type: pandas.CSVDataset
@@ -149,6 +154,21 @@ production_model:
   dataset:
     type: pickle.PickleDataset
     filepath: data/06_models/production_model.pkl
+
+
+# Results from drift calculation (DataFrame part)
+univariate_drift_df:
+  type: kedro_datasets.pandas.ParquetDataset
+  filepath: data/08_reporting/univariate_drift.parquet
+
+# NannyML result object for plotting (in-memory)
+univariate_drift_results:
+  type: kedro.io.MemoryDataset
+
+# The final PNG plot output
+univariate_drift_plot:
+  type: kedro_datasets.pillow.ImageDataset
+  filepath: data/08_reporting/univariate_drift_plot.png
 
 production_model_metrics:
   type: kedro_mlflow.io.artifacts.MlflowArtifactDataset
