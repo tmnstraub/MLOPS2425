@@ -50,9 +50,9 @@ def register_pipelines() -> Dict[str, Pipeline]:
     data_preprocessing_pipeline = data_preprocessing.create_pipeline()
     data_drift_pipeline = data_drift.create_pipeline()
     synthetic_data_drift_pipeline = synthetic_data_drift.create_pipeline()
-
     # Create a combined pipeline with all nodes that shows the sequential workflow
     # This allows visualizing the entire ML workflow in Kedro-Viz
+    full_data_drift_pipeline = synthetic_data_drift_pipeline + data_drift_pipeline
     combined_pipeline = synthetic_data_drift_pipeline + ingestion_pipeline + data_unit_tests_pipeline + data_preprocessing_pipeline + split_train_pipeline + feature_engineering_pipeline + model_predict_pipeline + data_drift_pipeline
     
     return {
@@ -66,6 +66,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
         # "feature_selection": feature_selection_pipeline,
         # "model_selection": model_selection_pipeline,
         # "model_train": model_train_pipeline,
+        "full_data_drift": full_data_drift_pipeline, 
         "inference": model_predict_pipeline,
         # Add default pipeline that combines all implemented pipelines in sequence
         "__default__": combined_pipeline
