@@ -14,8 +14,8 @@ wine_raw_data:
 wine_data_drift_test:
   type: pandas.CSVDataset
   filepath: data/01_raw/winemag_data_drift.csv
-  load_args:
-    index_col: 0
+  save_args:
+    index: false
 
 wine_ingested_data:
   type: pandas.CSVDataset
